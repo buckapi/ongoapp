@@ -1,7 +1,10 @@
 <div class="page-wrapper">
-  <app-header></app-header>
-  <app-sidebar></app-sidebar>
-<app-home>  </app-home>
-
-  <app-menubar></app-menubar>
+  <router-outlet ></router-outlet>
+  <app-header [hidden]="global.activeRoute === 'login' || global.activeRoute === 'register'"></app-header>
+  <app-sidebar [hidden]="global.activeRoute === 'login' || global.activeRoute === 'register'"></app-sidebar>
+  <app-login [hidden]="global.activeRoute!='login'"></app-login>
+  <app-home [hidden]="global.activeRoute!='home'"></app-home>
+  <app-register [hidden]="global.activeRoute!='register'"></app-register>
+  <app-profile [hidden]="global.activeRoute!='profile'"></app-profile>
+  <app-menubar [hidden]="global.activeRoute === 'login' || global.activeRoute === 'register'"></app-menubar>
 </div>

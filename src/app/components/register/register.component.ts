@@ -1,0 +1,411 @@
+import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators, FormArray, AbstractControl, ValidationErrors } from '@angular/forms';
+import Swal from 'sweetalert2';
+import { AuthPocketbaseService } from '../../services/authPocketbase.service';
+import { GlobalService } from '../../services/global.service';
+import { register as registerSwiperElements } from 'swiper/element/bundle';
+import { CdkScrollable } from '@angular/cdk/scrolling';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
+registerSwiperElements();
+
+@Component({
+  selector: 'app-register',
+  standalone: true,
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, ],
+  templateUrl: './register.component.html',
+  styleUrls: ['./register.component.css'],
+  schemas: [NO_ERRORS_SCHEMA]
+})
+export class RegisterComponent {
+  currentStep = 1;
+  userType: 'partner' | 'client' | null = null;
+  
+  // Formulario para partners
+  partnerForm: FormGroup;
+  
+  // Formulario para clientes
+  clientForm: FormGroup;
+
+  // Configuración del swiper
+  swiperConfig = {
+    slidesPerView: 1,
+    spaceBetween: 30,
+    pagination: {
+      clickable: true,
+      type: 'bullets'
+    }
+  };
+
+  constructor(
+    private fb: FormBuilder,
+    public auth: AuthPocketbaseService,
+    public global: GlobalService
+  ) {
+
+    
+    // Formulario para partners (locales nocturnos)
+    this.partnerForm = this.fb.group({
+      // Paso 1
+      email: ['', [Validators.required, Validators.email]],
+      password: ['', [Validators.required, Validators.minLength(8)]],
+      confirmPassword: ['', Validators.required],
+      
+      // Paso 2
+      venueName: ['', Validators.required],
+      address: ['', Validators.required],
+      phone: ['', Validators.required],
+      
+      // Paso 3
+      description: [''],
+      capacity: [''],
+      openingHours: [''],
+      terms: [false, Validators.requiredTrue]
+    }, {
+      validators: this.passwordMatchValidator
+    });
+
+    // Formulario para clientes
+    this.clientForm = this.fb.group({
+      // Paso 1 - Información básica
+      email: ['', [Validators.required, Validators.email]],
+      password: ['', [Validators.required, Validators.minLength(8)]],
+      confirmPassword: ['', Validators.required],
+      
+      // Paso 2 - Información personal
+      firstName: ['', Validators.required],
+      birthDate: ['', [Validators.required, this.validateAge]],
+      gender: ['Women', Validators.required],
+      
+      // Paso 3 - Preferencias
+      orientation: this.fb.group({
+        straight: [false],
+        gay: [false],
+        lesbian: [false],
+        bisexual: [false],
+        asexual: [false],
+        queer: [false],
+        demisexual: [false]
+      }),
+      interestedIn: ['Women', Validators.required],
+      lookingFor: ['Long-term partner', Validators.required],
+      
+      // Paso 4 - Fotos (usamos FormArray para múltiples imágenes)
+      photos: this.fb.array(Array(6).fill(null)),
+      
+      // Términos y condiciones
+      terms: [false, Validators.requiredTrue]
+    }, {
+      validators: this.passwordMatchValidator
+    });
+  }
+
+ 
+  // Envío de formularios
+ /*  onSubmit() {
+    if (this.userType === 'partner') {
+      this.registerPartner();
+    } else if (this.userType === 'client') {
+      this.registerClient();
+    }
+  } */
+
+  registerPartner() {
+    if (this.partnerForm.invalid) {
+      this.markPartnerFieldsAsTouched(this.currentStep);
+      return;
+    }
+
+    const formData = this.partnerForm.value;
+    
+    this.auth.registerUser(
+      formData.email,
+      formData.password,
+      'partner',
+      formData.venueName,
+      formData.address
+    ).subscribe({
+      next: (response) => {
+        this.showSuccessAndLogin(formData.email, formData.password);
+      },
+      error: (error) => {
+        this.showError(error);
+      }
+    });
+  }
+
+  registerClient() {
+    if (this.clientForm.invalid) {
+      this.markClientFieldsAsTouched(this.currentStep);
+      return;
+    }
+
+    const formData = this.clientForm.value;
+    const phoneNumber = `${formData.phone.countryCode}${formData.phone.number}`;
+    
+    this.auth.registerUser(
+      '', // Los clientes pueden no tener email inicialmente
+      this.generateRandomPassword(), // Generar contraseña aleatoria
+      'client',
+      formData.firstName,
+      phoneNumber
+    ).subscribe({
+      next: (response) => {
+        // Guardar datos adicionales del cliente
+        const clientData = {
+          birthDate: formData.birthDate,
+          gender: formData.gender,
+          orientation: formData.orientation,
+          interestedIn: formData.interestedIn,
+          lookingFor: formData.lookingFor,
+/*           photos: formData.photos,
+ */          userId: response.id
+        };
+        
+        this.auth.pb.collection('usuariosClient').create(clientData).then(() => {
+          // Si usamos OTP, aquí iría la lógica para enviarlo
+          this.showSuccessAndRedirect();
+        });
+      },
+      error: (error) => {
+        this.showError(error);
+      }
+    });
+  }
+
+  // Generar contraseña aleatoria para clientes (que usan OTP)
+  generateRandomPassword(): string {
+    return Math.random().toString(36).slice(-8);
+  }
+
+  // Mostrar mensajes
+  showSuccessAndLogin(email: string, password: string) {
+    Swal.fire({
+      title: 'Registro Exitoso',
+      text: 'Tu cuenta ha sido creada correctamente.',
+      icon: 'success'
+    }).then(() => {
+      this.auth.loginUser(email, password).subscribe({
+        next: () => {
+          this.global.setRoute('home-partner');
+        },
+        error: () => {
+          this.global.setRoute('login');
+        }
+      });
+    });
+  }
+
+  showSuccessAndRedirect() {
+    Swal.fire({
+      title: 'Registro Exitoso',
+      text: 'Por favor verifica tu teléfono con el código OTP enviado.',
+      icon: 'success'
+    }).then(() => {
+      this.global.setRoute('otp-verification');
+    });
+  }
+
+  showError(error: any) {
+    console.error('Error:', error);
+    Swal.fire({
+      title: 'Error',
+      text: 'Hubo un problema al registrar tu cuenta. Por favor intenta nuevamente.',
+      icon: 'error'
+    });
+  }
+
+  // Validador de coincidencia de contraseñas
+  passwordMatchValidator(form: FormGroup) {
+    const password = form.get('password')?.value;
+    const confirmPassword = form.get('confirmPassword')?.value;
+    return password === confirmPassword ? null : { mismatch: true };
+  }
+
+  // Manejo de selección de tipo de usuario
+  selectUserType(type: 'partner' | 'client') {
+    this.userType = type;
+    this.nextStep();
+  }
+
+  // Navegación entre pasos
+  nextStep() {
+    // Validar campos antes de avanzar
+    if (this.userType === 'client') {
+      if (this.currentStep === 1 && this.clientForm.get('email')?.invalid) {
+        this.markClientFieldsAsTouched(1);
+        return;
+      }
+      if (this.currentStep === 2 && this.clientForm.get('firstName')?.invalid) {
+        this.markClientFieldsAsTouched(2);
+        return;
+      }
+    }
+    
+    this.currentStep++;
+  }
+
+  prevStep() {
+    this.currentStep--;
+  }
+
+  // Marcar campos como tocados para mostrar errores
+  markClientFieldsAsTouched(step: number) {
+    if (step === 1) {
+      this.clientForm.get('email')?.markAsTouched();
+      this.clientForm.get('password')?.markAsTouched();
+      this.clientForm.get('confirmPassword')?.markAsTouched();
+    } else if (step === 2) {
+      this.clientForm.get('firstName')?.markAsTouched();
+      this.clientForm.get('birthDate')?.markAsTouched();
+      this.clientForm.get('gender')?.markAsTouched();
+    }
+  }
+
+  markPartnerFieldsAsTouched(step: number) {
+    if (step === 1) {
+      this.partnerForm.get('email')?.markAsTouched();
+      this.partnerForm.get('password')?.markAsTouched();
+      this.partnerForm.get('confirmPassword')?.markAsTouched();
+    } else if (step === 2) {
+      this.partnerForm.get('venueName')?.markAsTouched();
+      this.partnerForm.get('address')?.markAsTouched();
+      this.partnerForm.get('phone')?.markAsTouched();
+    } else if (step === 3) {
+      this.partnerForm.get('description')?.markAsTouched();
+      this.partnerForm.get('capacity')?.markAsTouched();
+      this.partnerForm.get('openingHours')?.markAsTouched();
+      this.partnerForm.get('terms')?.markAsTouched();
+    }
+  }
+
+  // Manejo de imágenes
+ /*  handleFileInput(event: any, index: number) {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e: any) => {
+        const photosArray = this.clientForm.get('photos') as FormArray;
+        photosArray.at(index).setValue(e.target.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  } */
+    async handleFileInput(event: any, index: number) {
+      const file = event.target.files[0];
+      if (file) {
+        const formData = new FormData();
+        formData.append('file', file);
+        
+        try {
+          const record = await this.auth.pb.collection('files').create(formData);
+          const photosArray = this.clientForm.get('photos') as FormArray;
+          photosArray.at(index).setValue(record.id);
+        } catch (error) {
+          console.error('Error subiendo foto:', error);
+        }
+      }
+    }
+  validateAge(control: AbstractControl): ValidationErrors | null {
+    const birthDate = new Date(control.value);
+    const ageDiff = Date.now() - birthDate.getTime();
+    const ageDate = new Date(ageDiff);
+    const age = Math.abs(ageDate.getUTCFullYear() - 1970);
+    
+    return age >= 18 ? null : { underAge: true };
+  }
+  // Envío del formulario
+  async onSubmit() {
+    if (this.clientForm.invalid) {
+      this.markClientFieldsAsTouched(this.currentStep);
+      return;
+    }
+  
+    const formData = this.clientForm.value;
+    
+    try {
+      // 1. Registrar usuario en PocketBase
+      const userResponse = await this.auth.registerUser(
+        formData.email,
+        formData.password,
+        'client',
+        formData.firstName,
+        '' // No usamos teléfono por ahora
+      ).toPromise();
+  
+      // 2. Preparar datos adicionales del cliente
+      const clientData: any = {
+        userId: userResponse.id,
+        birthDate: new Date(formData.birthDate).toISOString(), // Formato correcto para PB
+        gender: formData.gender,
+        orientation: this.getSelectedOrientations(),
+        interestedIn: formData.interestedIn,
+        lookingFor: formData.lookingFor,
+        profileComplete: true,
+        email: formData.email // Guardar email también en la colección clientes
+      };
+  
+      // 3. Guardar en la colección usuariosClient
+      await this.auth.pb.collection('usuariosClient').create(clientData);
+  
+      // 4. Iniciar sesión automáticamente
+      const authResponse = await this.auth.loginUser(formData.email, formData.password).toPromise();
+      
+      // 5. Redirigir al perfil
+      this.global.setRoute('profile');
+      
+      // 6. Mostrar confirmación
+      Swal.fire({
+        title: 'Registro Completo',
+        text: 'Tu perfil ha sido creado exitosamente',
+        icon: 'success',
+        confirmButtonText: 'Continuar'
+      });
+  
+    } catch (error: any) {
+      console.error('Error en el registro:', error);
+      
+      let errorMessage = 'Hubo un problema al registrar tu cuenta. Por favor intenta nuevamente.';
+      
+      // Manejo específico de errores de PocketBase
+      if (error && typeof error === 'object' && error.response?.data) {
+        const pbError = error.response.data;
+        if (pbError.email) {
+          errorMessage = pbError.email.message;
+        } else if (pbError.username) {
+          errorMessage = pbError.username.message;
+        }
+      }
+      
+      Swal.fire({
+        title: 'Error',
+        text: errorMessage,
+        icon: 'error',
+        confirmButtonText: 'Entendido'
+      });
+    }
+  }
+  
+  
+  // Método auxiliar para obtener orientaciones seleccionadas
+ /*  getSelectedOrientations(orientationGroup: any): string[] {
+    return Object.keys(orientationGroup)
+      .filter(key => orientationGroup[key])
+      .map(key => key.toLowerCase());
+  } */
+  getSelectedOrientations(): string[] {
+    const orientationGroup = this.clientForm.get('orientation')?.value;
+    return Object.keys(orientationGroup)
+      .filter(key => orientationGroup[key])
+      .map(key => key.toLowerCase());
+  }
+  // Getter para acceder fácilmente a los controles del formulario
+  get f() {
+    return this.clientForm.controls;
+  }
+
+  // Getter para acceder al FormArray de fotos
+  get photosArray(): FormArray {
+    return this.clientForm.get('photos') as FormArray;
+  }
+}

@@ -9708,7 +9708,8 @@ svg.text-dark path {
   overflow: hidden; }
   .dz-media img,
   .dz-post-media img {
-    max-width: 100%;
+    /* cambio de tamaño de 100% a 80% */
+    max-width: 80%;
     height: auto;
     width: 100%; }
 
@@ -11756,7 +11757,7 @@ section {
   .footer.fixed {
     width: 100%;
     left: 0;
-    bottom: 0;
+    bottom: 5px;
     z-index: 999;
     position: fixed; }
     .footer.fixed .btn .cart {
@@ -17907,7 +17908,9 @@ label input {
     color: inherit; }
 
 .account-area .section-head {
-  padding: 20px; }
+  padding: 20px; 
+  padding-top: 65px;
+        }
   .account-area .section-head h2, .account-area .section-head .h2 {
     margin-bottom: 5px; }
 
@@ -18075,7 +18078,7 @@ label input {
   text-align: center;
   margin-top: auto;
   width: 100%;
-  padding-bottom: 130px; }
+  padding-bottom: 200px; }
   .welcome-area .get-started .swiper-wrapper {
     margin-bottom: -20px; }
   .welcome-area .get-started .dz-title {
@@ -18109,7 +18112,7 @@ label input {
 
 .bottom-btn {
   position: fixed;
-  bottom: 0;
+  bottom: 55px;
   width: 100%;
   left: 50%;
   z-index: 9;

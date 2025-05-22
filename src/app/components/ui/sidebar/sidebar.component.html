@@ -2,25 +2,25 @@
     <div class="dark-overlay"></div>
 	<div class="sidebar">
 		<div class="inner-sidebar">
-			<a href="profile.html" class="author-box">
+			<a class="author-box">
 				<div class="dz-media">
 					<img src="assets/images/user/pic1.jpg" alt="author-image">
 				</div>
 				<div class="dz-info">
-					<h5 class="name">John Doe</h5>
-					<span>example gmail.com</span>
+					<h5 class="name">{{auth.currentUser?.name || 'Usuario'}}</h5>
+					<span>{{auth.currentUser?.email || 'No disponible'}}</span>
 				</div>
 			</a>
 			<ul class="nav navbar-nav">	
 				<li>
-					<a class="nav-link active" href="home.html">
+					<a class="nav-link active" (click)="global.setRoute('home')">
 						<span class="dz-icon">
 							<i class="icon feather icon-home"></i>
 						</span>
-						<span>Home</span>
+						<span></span>
 					</a>
 				</li>
-				<li>
+				<!-- <li>
 					<a class="nav-link" href="../package.html">
 						<span class="dz-icon">
 							<i class="icon feather icon-heart"></i>
@@ -59,7 +59,7 @@
 						</span>
 						<span>Settings</span>
 					</a>
-				</li>
+				</li> -->
 				<li>
 					<a class="nav-link" href="profile.html">
 						<span class="dz-icon">
@@ -69,11 +69,11 @@
 					</a>
 				</li>
 				<li>
-					<a class="nav-link" href="onboarding.html">
+					<a class="nav-link" (click)="auth.logoutUser()">
 						<span class="dz-icon">
 							<i class="icon feather icon-log-out"></i>
 						</span>
-						<span>Logout</span>
+						<span>Cerrar sesión</span>
 					</a>
 				</li>
 			</ul>
@@ -84,7 +84,7 @@
 							<span class="dz-icon">                        
 								<i class="icon feather icon-moon"></i>
 							</span>					
-							<span>Dark Mode</span>
+							<span>Modo light</span>
 							<div class="custom-switch">
 								<input type="checkbox" class="switch-input theme-btn" id="toggle-dark-menu">
 								<label class="custom-switch-label" for="toggle-dark-menu"></label>
@@ -93,7 +93,7 @@
 					</li>
 				</ul>
 				<div class="app-info">
-					<h6 class="name">W3Dating - Dating App</h6>
+					<h6 class="name">OngoApp - Dating App</h6>
 					<span class="ver-info">App Version 1.1</span>
 				</div>
 			</div>

@@ -1,0 +1,403 @@
+<!-- Paso 1: Selección de tipo de usuario -->
+<div class="content-body" *ngIf="currentStep === 1 && !userType">
+    <div class="welcome-area bg-image">
+      <div class="welcome-inner">
+        <div class="dz-media">
+          <img src="../assets/images/onboarding/pic1.png" alt="">
+        </div>
+        
+        <swiper-container 
+        [slidesPerView]="swiperConfig.slidesPerView"
+        [spaceBetween]="swiperConfig.spaceBetween"
+        [pagination]="swiperConfig.pagination"
+        class="get-started"
+      >
+        <swiper-slide>
+          <div class="slide-info">
+            <div class="started">
+              <h2 class="title mb-3">Start Your Dating Story</h2>
+              <p>Your companion for meaningful connections</p>
+            </div>
+          </div>
+        </swiper-slide>
+        // Más slides... 
+      </swiper-container> 
+      </div>
+      
+      <div class="bottom-btn container">
+        <div class="row g-3">
+          <div class="col-12">
+            <button (click)="selectUserType('partner')" class="btn btn-lg btn-primary w-100">
+              Soy un Local Nocturno
+            </button>
+          </div>
+          <div class="col-12">
+            <button (click)="selectUserType('client')" class="btn btn-lg btn-secondary w-100">
+              Soy un Cliente
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Formulario para Partners (Locales Nocturnos) -->
+  <ng-container *ngIf="userType === 'partner'">
+    <!-- Paso 1: Credenciales -->
+    <div class="page-content" *ngIf="currentStep === 1">
+      <div class="container">
+        <div class="account-area">
+          <div class="section-head ps-0">
+            <h3>Registro de Local Nocturno</h3>
+          </div>
+          
+          <form [formGroup]="partnerForm">
+            <div class="mb-3">
+              <label class="form-label">Email *</label>
+              <input type="email" class="form-control" formControlName="email"
+                     [class.is-invalid]="partnerForm.get('email')?.touched && partnerForm.get('email')?.invalid">
+              <div *ngIf="partnerForm.get('email')?.touched && partnerForm.get('email')?.invalid" class="invalid-feedback">
+                Email inválido
+              </div>
+            </div>
+            
+            <div class="mb-3">
+              <label class="form-label">Contraseña *</label>
+              <input type="password" class="form-control" formControlName="password"
+                     [class.is-invalid]="partnerForm.get('password')?.touched && partnerForm.get('password')?.invalid">
+              <div *ngIf="partnerForm.get('password')?.touched && partnerForm.get('password')?.invalid" class="invalid-feedback">
+                Mínimo 8 caracteres
+              </div>
+            </div>
+            
+            <div class="mb-3">
+              <label class="form-label">Confirmar Contraseña *</label>
+              <input type="password" class="form-control" formControlName="confirmPassword"
+                     [class.is-invalid]="partnerForm.errors?.['mismatch']">
+              <div *ngIf="partnerForm.errors?.['mismatch']" class="invalid-feedback">
+                Las contraseñas no coinciden
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Paso 2: Información del Local -->
+    <div class="page-content" *ngIf="currentStep === 2">
+      <!-- Formulario similar para info del local -->
+    </div>
+    
+    <!-- Paso 3: Detalles Adicionales -->
+    <div class="page-content" *ngIf="currentStep === 3">
+      <!-- Formulario para detalles adicionales -->
+    </div>
+  </ng-container>
+  
+  <!-- Formulario para Clientes -->
+  <!-- Paso 1: Selección de tipo de usuario -->
+<div class="content-body" *ngIf="currentStep === 1 && !userType">
+    <div class="welcome-area bg-image">
+      <div class="welcome-inner">
+        <div class="dz-media">
+          <img src="../assets/images/onboarding/pic1.png" alt="">
+        </div>
+        
+        <div class="get-started">
+          <div class="slide-info">
+            <div class="started">
+              <h2 class="title mb-3">Start Your Dating Story</h2>
+              <p>Your companion for meaningful connections</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="bottom-btn container">
+        <div class="row g-3">
+          <div class="col-12">
+            <button (click)="selectUserType('partner')" class="btn btn-lg btn-primary w-100">
+              Soy un Local Nocturno
+            </button>
+          </div>
+          <div class="col-12">
+            <button (click)="selectUserType('client')" class="btn btn-lg btn-secondary w-100">
+              Soy un Cliente
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Formulario para Clientes -->
+  <ng-container *ngIf="userType === 'client'">
+    <!-- Paso 1: Correo y Contraseña -->
+    <div class="page-content" *ngIf="currentStep === 1">
+      <div class="container">
+        <div class="account-area">
+          <a (click)="userType = null; currentStep = 1" class="back-btn dz-flex-box">
+            <i class="icon feather icon-chevron-left"></i>
+          </a>
+          <div class="section-head ps-0">
+            <h3>Por favor ingresa tu correo electrónico</h3>
+          </div>
+          
+          <form [formGroup]="clientForm">
+            <div class="mb-3">
+              <label class="form-label">Correo Electrónico *</label>
+              <input type="email" class="form-control" formControlName="email"
+                    [class.is-invalid]="f['email'].touched && f['email'].invalid">
+              <div *ngIf="f['email'].touched && f['email'].invalid" class="invalid-feedback">
+                <span *ngIf="f['email'].errors?.['required']">El correo es requerido</span>
+                <span *ngIf="f['email'].errors?.['email']">Ingresa un correo válido</span>
+              </div>
+            </div>
+            
+            <div class="mb-3">
+              <label class="form-label">Contraseña *</label>
+              <input type="password" class="form-control" formControlName="password"
+                    [class.is-invalid]="f['password'].touched && f['password'].invalid">
+              <div *ngIf="f['password'].touched && f['password'].invalid" class="invalid-feedback">
+                <span *ngIf="f['password'].errors?.['required']">La contraseña es requerida</span>
+                <span *ngIf="f['password'].errors?.['minlength']">Mínimo 8 caracteres</span>
+              </div>
+            </div>
+            
+            <div class="mb-3">
+              <label class="form-label">Confirmar Contraseña *</label>
+              <input type="password" class="form-control" formControlName="confirmPassword"
+                    [class.is-invalid]="clientForm.errors?.['mismatch']">
+              <div *ngIf="clientForm.errors?.['mismatch']" class="invalid-feedback">
+                Las contraseñas no coinciden
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Paso 2: Información Personal -->
+    <div class="page-content" *ngIf="currentStep === 2">
+      <div class="container">
+        <div class="account-area">
+          <a (click)="prevStep()" class="back-btn dz-flex-box">
+            <i class="icon feather icon-chevron-left"></i>
+          </a>
+          <div class="section-head ps-0">
+            <h3>Información Personal</h3>
+          </div>
+          
+          <form [formGroup]="clientForm">
+            <div class="mb-3">
+              <label class="form-label">Nombre *</label>
+              <input type="text" class="form-control" formControlName="firstName"
+                    [class.is-invalid]="f['firstName'].touched && f['firstName'].invalid">
+              <div *ngIf="f['firstName'].touched && f['firstName'].invalid" class="invalid-feedback">
+                Por favor ingresa tu nombre
+              </div>
+            </div>
+            
+            <div class="mb-3">
+              <label class="form-label">Fecha de Nacimiento *</label>
+              <input type="date" class="form-control" formControlName="birthDate"
+                    [class.is-invalid]="f['birthDate'].touched && f['birthDate'].invalid">
+              <div *ngIf="f['birthDate'].touched && f['birthDate'].invalid" class="invalid-feedback">
+                Por favor ingresa tu fecha de nacimiento
+              </div>
+            </div>
+            
+            <div class="mb-3">
+              <label class="form-label">Género *</label>
+              <select class="form-control" formControlName="gender"
+                      [class.is-invalid]="f['gender'].touched && f['gender'].invalid">
+                <option value="Women">Mujer</option>
+                <option value="Men">Hombre</option>
+                <option value="Other">Otro</option>
+              </select>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Paso 3: Preferencias -->
+    <div class="page-content" *ngIf="currentStep === 3">
+      <div class="container">
+        <div class="account-area">
+          <a (click)="prevStep()" class="back-btn dz-flex-box">
+            <i class="icon feather icon-chevron-left"></i>
+          </a>
+          <div class="section-head ps-0">
+            <h3>Tus Preferencias</h3>
+          </div>
+          
+          <form [formGroup]="clientForm">
+            <div class="mb-4">
+                <label class="form-label">Orientación Sexual</label>
+                
+                <!-- Usar formGroupName para agrupar los checkboxes -->
+                <div formGroupName="orientation">
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" formControlName="straight" id="straight">
+                    <label class="form-check-label" for="straight">Straight</label>
+                  </div>
+                  
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" formControlName="gay" id="gay">
+                    <label class="form-check-label" for="gay">Gay</label>
+                  </div>
+                  
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" formControlName="lesbian" id="lesbian">
+                    <label class="form-check-label" for="lesbian">Lesbian</label>
+                  </div>
+                  
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" formControlName="bisexual" id="bisexual">
+                    <label class="form-check-label" for="bisexual">Bisexual</label>
+                  </div>
+                  
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" formControlName="asexual" id="asexual">
+                    <label class="form-check-label" for="asexual">Asexual</label>
+                  </div>
+                  
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" formControlName="queer" id="queer">
+                    <label class="form-check-label" for="queer">Queer</label>
+                  </div>
+                  
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" formControlName="demisexual" id="demisexual">
+                    <label class="form-check-label" for="demisexual">Demisexual</label>
+                  </div>
+                </div>
+              </div>
+            
+            <div class="mb-4">
+              <label class="form-label">Interesado en *</label>
+              <select class="form-control" formControlName="interestedIn">
+                <option value="Women">Mujeres</option>
+                <option value="Men">Hombres</option>
+                <option value="Other">Otros</option>
+              </select>
+            </div>
+            
+            <div class="mb-4">
+              <label class="form-label">Qué buscas *</label>
+              <select class="form-control" formControlName="lookingFor">
+                <option value="Long-term partner">Relación seria</option>
+                <option value="Short-term fun">Diversión a corto plazo</option>
+                <option value="New friends">Nuevas amistades</option>
+              </select>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Paso 4: Fotos -->
+     <!-- Paso 4: Fotos -->
+<div class="page-content p-b70" *ngIf="currentStep === 4">
+    <div class="container">
+      <div class="account-area">
+        <a (click)="prevStep()" class="back-btn dz-flex-box">
+          <i class="icon feather icon-chevron-left"></i>
+        </a>
+        <div class="section-head ps-0">
+          <h3>Agrega tus fotos</h3>
+          <p>Sube al menos 2 fotos para tu perfil</p>
+        </div>
+        
+        <!-- Envuelve todo en el formulario -->
+        <form [formGroup]="clientForm">
+          <div class="row g-3">
+            <div class="col-8">
+              <div class="dz-drop-box">
+                <div class="drop-bx bx-lg">
+                  <div class="imagePreview" [style.background-image]="'url(' + (photosArray.value[0] || '../assets/images/recent-pic/drop-bx.png') + ')'">
+                    <div class="remove-img remove-btn" *ngIf="photosArray.value[0]" (click)="photosArray.at(0).setValue(null)">
+                      <i class="icon feather icon-x"></i>
+                    </div>
+                    <input type='file' class="form-control d-none imageUpload" id="imageUpload1" 
+                          accept=".png, .jpg, .jpeg" (change)="handleFileInput($event, 0)">
+                    <label for="imageUpload1"></label>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="col-4" *ngFor="let index of [1, 2]; let i = index">
+              <div class="dz-drop-box">
+                <div class="drop-bx">
+                  <div class="imagePreview" [style.background-image]="'url(' + (photosArray.value[index] || '../assets/images/recent-pic/drop-bx.png') + ')'">
+                    <div class="remove-img remove-btn" *ngIf="photosArray.value[index]" (click)="photosArray.at(index).setValue(null)">
+                      <i class="icon feather icon-x"></i>
+                    </div>
+                    <input type='file' class="form-control d-none imageUpload" [id]="'imageUpload' + (index + 1)" 
+                          accept=".png, .jpg, .jpeg" (change)="handleFileInput($event, index)">
+                    <label [for]="'imageUpload' + (index + 1)"></label>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="col-4" *ngFor="let index of [3, 4, 5]; let i = index">
+              <div class="dz-drop-box">
+                <div class="drop-bx">
+                  <div class="imagePreview" [style.background-image]="'url(' + (photosArray.value[index] || '../assets/images/recent-pic/drop-bx.png') + ')'">
+                    <div class="remove-img remove-btn" *ngIf="photosArray.value[index]" (click)="photosArray.at(index).setValue(null)">
+                      <i class="icon feather icon-x"></i>
+                    </div>
+                    <input type='file' class="form-control d-none imageUpload" [id]="'imageUpload' + (index + 1)" 
+                          accept=".png, .jpg, .jpeg" (change)="handleFileInput($event, index)">
+                    <label [for]="'imageUpload' + (index + 1)"></label>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="form-check mt-4">
+            <input class="form-check-input" type="checkbox" id="terms" formControlName="terms">
+            <label class="form-check-label" for="terms">
+              Acepto los términos y condiciones
+            </label>
+            <div *ngIf="f['terms'].touched && f['terms'].invalid" class="invalid-feedback">
+              Debes aceptar los términos y condiciones
+            </div>
+          </div>
+        </form> <!-- Cierre del formulario -->
+      </div>
+    </div>
+  </div> 
+  </ng-container>
+  
+  <!-- Footer de navegación -->
+  <div class="footer fixed bg-transparent" *ngIf="userType && currentStep < (userType === 'partner' ? 3 : 4)">
+    <div class="container">
+      <div class="row g-2">
+        <div class="col-6" *ngIf="currentStep > 1">
+          <button (click)="prevStep()" class="btn btn-outline-secondary w-100">
+            Anterior
+          </button>
+        </div>
+        <div class="col-6" [class.offset-6]="currentStep === 1">
+          <button (click)="nextStep()" class="btn btn-primary w-100">
+            Siguiente
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Footer para enviar -->
+  <div class="footer fixed bg-white" *ngIf="userType && currentStep === (userType === 'partner' ? 3 : 4)">
+    <div class="container">
+      <button (click)="onSubmit()" class="btn btn-success w-100" 
+              [disabled]="!clientForm.get('terms')?.value || clientForm.invalid">
+        Completar Registro
+      </button>
+    </div>
+  </div>
