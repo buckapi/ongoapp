@@ -12,7 +12,7 @@ registerSwiperElements();
 @Component({
   selector: 'app-register',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, ],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule,],
   templateUrl: './register.component.html',
   styleUrls: ['./register.component.css'],
   schemas: [NO_ERRORS_SCHEMA]
@@ -20,10 +20,10 @@ registerSwiperElements();
 export class RegisterComponent {
   currentStep = 1;
   userType: 'partner' | 'client' | null = null;
-  
+
   // Formulario para partners
   partnerForm: FormGroup;
-  
+
   // Formulario para clientes
   clientForm: FormGroup;
 
@@ -43,26 +43,26 @@ export class RegisterComponent {
     public global: GlobalService
   ) {
 
-    
+
     // Formulario para partners (locales nocturnos)
     this.partnerForm = this.fb.group({
       // Paso 1
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(8)]],
       confirmPassword: ['', Validators.required],
-      
+
       // Paso 2
-      venueName: ['', Validators.required],
-      address: ['', Validators.required],
-      phone: ['', Validators.required],
-      
+      venueName: ['', [Validators.required, Validators.maxLength(100)]],
+      address: ['', [Validators.required, Validators.maxLength(200)]],
+      phone: ['', [Validators.required, Validators.pattern(/^[0-9]{10,15}$/)]],
+
       // Paso 3
-      description: [''],
-      capacity: [''],
+      description: ['', Validators.maxLength(500)],
+      capacity: ['', Validators.pattern(/^[0-9]*$/)],
       openingHours: [''],
       terms: [false, Validators.requiredTrue]
     }, {
-      validators: this.passwordMatchValidator
+      validators: [this.passwordMatchValidator, this.validateOpeningHours]
     });
 
     // Formulario para clientes
@@ -71,12 +71,12 @@ export class RegisterComponent {
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(8)]],
       confirmPassword: ['', Validators.required],
-      
+
       // Paso 2 - Información personal
       firstName: ['', Validators.required],
       birthDate: ['', [Validators.required, this.validateAge]],
       gender: ['Women', Validators.required],
-      
+
       // Paso 3 - Preferencias
       orientation: this.fb.group({
         straight: [false],
@@ -89,88 +89,157 @@ export class RegisterComponent {
       }),
       interestedIn: ['Women', Validators.required],
       lookingFor: ['Long-term partner', Validators.required],
-      
+
       // Paso 4 - Fotos (usamos FormArray para múltiples imágenes)
       photos: this.fb.array(Array(6).fill(null)),
-      
+
       // Términos y condiciones
       terms: [false, Validators.requiredTrue]
     }, {
       validators: this.passwordMatchValidator
     });
   }
-
- 
-  // Envío de formularios
- /*  onSubmit() {
-    if (this.userType === 'partner') {
-      this.registerPartner();
-    } else if (this.userType === 'client') {
-      this.registerClient();
+  // Agrega este getter para acceder fácilmente a los controles del formulario de partner
+  get pf() {
+    return this.partnerForm.controls;
+  }
+  validateOpeningHours(control: AbstractControl): ValidationErrors | null {
+    const hours = control.get('openingHours')?.value;
+    if (hours && !/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]\s*-\s*([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/.test(hours)) {
+      return { invalidHours: true };
     }
-  } */
+    return null;
+  }
 
-  registerPartner() {
+  async onSubmit() {
+    try {
+      if (this.userType === 'partner') {
+        await this.registerPartner();
+      } else if (this.userType === 'client') {
+        await this.registerClient();
+      }
+    } catch (error: any) {
+      console.error('Error en el registro:', error);
+      
+      let errorMessage = 'Hubo un problema al registrar tu cuenta. Por favor intenta nuevamente.';
+      
+      if (error?.response?.data) {
+        const pbError = error.response.data;
+        if (pbError.email) {
+          errorMessage = pbError.email.message;
+        } else if (pbError.username) {
+          errorMessage = pbError.username.message;
+        }
+      }
+      
+      Swal.fire({
+        title: 'Error',
+        text: errorMessage,
+        icon: 'error',
+        confirmButtonText: 'Entendido'
+      });
+    }
+  }
+  
+  async registerPartner() {
     if (this.partnerForm.invalid) {
       this.markPartnerFieldsAsTouched(this.currentStep);
       return;
     }
-
+  
     const formData = this.partnerForm.value;
-    
-    this.auth.registerUser(
+  
+    // 1. Registrar usuario en PocketBase
+    const userResponse = await this.auth.registerUser(
       formData.email,
       formData.password,
       'partner',
       formData.venueName,
       formData.address
-    ).subscribe({
-      next: (response) => {
-        this.showSuccessAndLogin(formData.email, formData.password);
-      },
-      error: (error) => {
-        this.showError(error);
-      }
+    ).toPromise();
+  
+    // 2. Preparar datos adicionales del partner
+    const partnerData: any = {
+      userId: userResponse.id,
+      venueName: formData.venueName,
+      address: formData.address,
+      phone: formData.phone,
+      description: formData.description,
+      capacity: formData.capacity,
+      openingHours: formData.openingHours,
+      status: 'pending',
+      approved: false,
+      email: formData.email // Guardar email también en la colección partners
+    };
+  
+    // 3. Guardar en la colección usuariosPartner
+    await this.auth.pb.collection('usuariosPartner').create(partnerData);
+  
+    // 4. Iniciar sesión automáticamente
+    await this.auth.loginUser(formData.email, formData.password).toPromise();
+  
+    // 5. Redirigir al dashboard de partner
+    this.global.setRoute('home-partner');
+  
+    // 6. Mostrar confirmación
+    Swal.fire({
+      title: 'Registro Exitoso',
+      text: 'Tu local ha sido registrado. Estará activo después de la aprobación.',
+      icon: 'success',
+      confirmButtonText: 'Entendido'
     });
   }
-
-  registerClient() {
+  
+  async registerClient() {
     if (this.clientForm.invalid) {
       this.markClientFieldsAsTouched(this.currentStep);
       return;
     }
-
+  
     const formData = this.clientForm.value;
-    const phoneNumber = `${formData.phone.countryCode}${formData.phone.number}`;
-    
-    this.auth.registerUser(
-      '', // Los clientes pueden no tener email inicialmente
-      this.generateRandomPassword(), // Generar contraseña aleatoria
-      'client',
-      formData.firstName,
-      phoneNumber
-    ).subscribe({
-      next: (response) => {
-        // Guardar datos adicionales del cliente
-        const clientData = {
-          birthDate: formData.birthDate,
-          gender: formData.gender,
-          orientation: formData.orientation,
-          interestedIn: formData.interestedIn,
-          lookingFor: formData.lookingFor,
-/*           photos: formData.photos,
- */          userId: response.id
-        };
-        
-        this.auth.pb.collection('usuariosClient').create(clientData).then(() => {
-          // Si usamos OTP, aquí iría la lógica para enviarlo
-          this.showSuccessAndRedirect();
-        });
-      },
-      error: (error) => {
-        this.showError(error);
-      }
-    });
+  
+    try {
+      // 1. Registrar usuario en PocketBase
+      const userResponse = await this.auth.registerUser(
+        formData.email,
+        formData.password,
+        'client',
+        formData.firstName,
+        '' // Teléfono opcional
+      ).toPromise();
+  
+      // 2. Preparar datos adicionales del cliente
+      const clientData: any = {
+        userId: userResponse.id,
+        birthDate: new Date(formData.birthDate).toISOString(),
+        gender: formData.gender,
+        orientation: this.getSelectedOrientations(),
+        interestedIn: formData.interestedIn,
+        lookingFor: formData.lookingFor,
+        profileComplete: true,
+        email: formData.email
+      };
+  
+      // 3. Guardar en la colección usuariosClient
+      await this.auth.pb.collection('usuariosClient').create(clientData);
+  
+      // 4. Iniciar sesión automáticamente
+      await this.auth.loginUser(formData.email, formData.password).toPromise();
+  
+      // 5. Redirigir al perfil
+      this.global.setRoute('profile');
+  
+      // 6. Mostrar confirmación
+      Swal.fire({
+        title: 'Registro Completo',
+        text: 'Tu perfil ha sido creado exitosamente',
+        icon: 'success',
+        confirmButtonText: 'Continuar'
+      });
+    } catch (error) {
+      console.error('Error registrando cliente:', error);
+      throw error; // Re-lanzar el error para que lo maneje onSubmit
+    }
   }
 
   // Generar contraseña aleatoria para clientes (que usan OTP)
@@ -219,7 +288,14 @@ export class RegisterComponent {
   passwordMatchValidator(form: FormGroup) {
     const password = form.get('password')?.value;
     const confirmPassword = form.get('confirmPassword')?.value;
-    return password === confirmPassword ? null : { mismatch: true };
+
+    if (password !== confirmPassword) {
+      form.get('confirmPassword')?.setErrors({ mismatch: true });
+      return { mismatch: true };
+    } else {
+      form.get('confirmPassword')?.setErrors(null);
+      return null;
+    }
   }
 
   // Manejo de selección de tipo de usuario
@@ -241,7 +317,7 @@ export class RegisterComponent {
         return;
       }
     }
-    
+
     this.currentStep++;
   }
 
@@ -280,119 +356,31 @@ export class RegisterComponent {
   }
 
   // Manejo de imágenes
- /*  handleFileInput(event: any, index: number) {
+  async handleFileInput(event: any, index: number) {
     const file = event.target.files[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onload = (e: any) => {
+      const formData = new FormData();
+      formData.append('file', file);
+
+      try {
+        const record = await this.auth.pb.collection('files').create(formData);
         const photosArray = this.clientForm.get('photos') as FormArray;
-        photosArray.at(index).setValue(e.target.result);
-      };
-      reader.readAsDataURL(file);
-    }
-  } */
-    async handleFileInput(event: any, index: number) {
-      const file = event.target.files[0];
-      if (file) {
-        const formData = new FormData();
-        formData.append('file', file);
-        
-        try {
-          const record = await this.auth.pb.collection('files').create(formData);
-          const photosArray = this.clientForm.get('photos') as FormArray;
-          photosArray.at(index).setValue(record.id);
-        } catch (error) {
-          console.error('Error subiendo foto:', error);
-        }
+        photosArray.at(index).setValue(record.id);
+      } catch (error) {
+        console.error('Error subiendo foto:', error);
       }
     }
+  }
   validateAge(control: AbstractControl): ValidationErrors | null {
     const birthDate = new Date(control.value);
     const ageDiff = Date.now() - birthDate.getTime();
     const ageDate = new Date(ageDiff);
     const age = Math.abs(ageDate.getUTCFullYear() - 1970);
-    
+
     return age >= 18 ? null : { underAge: true };
   }
-  // Envío del formulario
-  async onSubmit() {
-    if (this.clientForm.invalid) {
-      this.markClientFieldsAsTouched(this.currentStep);
-      return;
-    }
-  
-    const formData = this.clientForm.value;
-    
-    try {
-      // 1. Registrar usuario en PocketBase
-      const userResponse = await this.auth.registerUser(
-        formData.email,
-        formData.password,
-        'client',
-        formData.firstName,
-        '' // No usamos teléfono por ahora
-      ).toPromise();
-  
-      // 2. Preparar datos adicionales del cliente
-      const clientData: any = {
-        userId: userResponse.id,
-        birthDate: new Date(formData.birthDate).toISOString(), // Formato correcto para PB
-        gender: formData.gender,
-        orientation: this.getSelectedOrientations(),
-        interestedIn: formData.interestedIn,
-        lookingFor: formData.lookingFor,
-        profileComplete: true,
-        email: formData.email // Guardar email también en la colección clientes
-      };
-  
-      // 3. Guardar en la colección usuariosClient
-      await this.auth.pb.collection('usuariosClient').create(clientData);
-  
-      // 4. Iniciar sesión automáticamente
-      const authResponse = await this.auth.loginUser(formData.email, formData.password).toPromise();
-      
-      // 5. Redirigir al perfil
-      this.global.setRoute('profile');
-      
-      // 6. Mostrar confirmación
-      Swal.fire({
-        title: 'Registro Completo',
-        text: 'Tu perfil ha sido creado exitosamente',
-        icon: 'success',
-        confirmButtonText: 'Continuar'
-      });
-  
-    } catch (error: any) {
-      console.error('Error en el registro:', error);
-      
-      let errorMessage = 'Hubo un problema al registrar tu cuenta. Por favor intenta nuevamente.';
-      
-      // Manejo específico de errores de PocketBase
-      if (error && typeof error === 'object' && error.response?.data) {
-        const pbError = error.response.data;
-        if (pbError.email) {
-          errorMessage = pbError.email.message;
-        } else if (pbError.username) {
-          errorMessage = pbError.username.message;
-        }
-      }
-      
-      Swal.fire({
-        title: 'Error',
-        text: errorMessage,
-        icon: 'error',
-        confirmButtonText: 'Entendido'
-      });
-    }
-  }
-  
-  
-  // Método auxiliar para obtener orientaciones seleccionadas
- /*  getSelectedOrientations(orientationGroup: any): string[] {
-    return Object.keys(orientationGroup)
-      .filter(key => orientationGroup[key])
-      .map(key => key.toLowerCase());
-  } */
+
+
   getSelectedOrientations(): string[] {
     const orientationGroup = this.clientForm.get('orientation')?.value;
     return Object.keys(orientationGroup)

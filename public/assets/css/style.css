@@ -9709,7 +9709,7 @@ svg.text-dark path {
   .dz-media img,
   .dz-post-media img {
     /* cambio de tamaño de 100% a 80% */
-    max-width: 80%;
+    max-width: 100%;
     height: auto;
     width: 100%; }
 
@@ -12127,7 +12127,7 @@ section {
   --theme-text-color: #fff; }
 
 [data-theme-color="color-primary-2"] {
-  --primary: #ea3d85;
+  --primary: #f70192;
   --secondary: #441D3E;
   --rgba-primary-1: rgba(234, 61, 133, 0.1);
   --rgba-primary-2: rgba(234, 61, 133, 0.2);
@@ -18050,7 +18050,9 @@ label input {
   position: relative;
   flex-direction: column;
   display: flex;
-  height: 100vh; }
+  height: 90vh;
+  /* height: 100vh; */
+}
 
 .welcome-area .logo-area {
   text-align: center;
@@ -18078,7 +18080,7 @@ label input {
   text-align: center;
   margin-top: auto;
   width: 100%;
-  padding-bottom: 200px; }
+  padding-bottom: 160px; }
   .welcome-area .get-started .swiper-wrapper {
     margin-bottom: -20px; }
   .welcome-area .get-started .dz-title {
@@ -18112,7 +18114,7 @@ label input {
 
 .bottom-btn {
   position: fixed;
-  bottom: 55px;
+  bottom: 85px;
   width: 100%;
   left: 50%;
   z-index: 9;

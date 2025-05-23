@@ -15,12 +15,12 @@
         <swiper-slide>
           <div class="slide-info">
             <div class="started">
-              <h2 class="title mb-3">Start Your Dating Story</h2>
-              <p>Your companion for meaningful connections</p>
+              <h2 class="title mb-3">OnGo</h2>
+              <p>Sal y disfruta de la vida nocturna</p>
             </div>
           </div>
         </swiper-slide>
-        // Más slides... 
+        <!-- Más slides... -->
       </swiper-container> 
       </div>
       
@@ -38,6 +38,9 @@
           </div>
         </div>
       </div>
+      <div class="register-link"> 
+        <p style="padding-top: 5px; text-align: center;">¿Tienes una cuenta? <a (click)="global.setRoute('login')" style="color: #f70192;">Inicia sesión</a></p>
+      </div>
     </div>
   </div>
   
@@ -47,33 +50,39 @@
     <div class="page-content" *ngIf="currentStep === 1">
       <div class="container">
         <div class="account-area">
+          <a (click)="userType = null; currentStep = 1" class="back-btn dz-flex-box">
+            <i class="icon feather icon-chevron-left"></i>
+          </a>
           <div class="section-head ps-0">
             <h3>Registro de Local Nocturno</h3>
+            <p>Crea una cuenta para administrar tu local</p>
           </div>
           
           <form [formGroup]="partnerForm">
             <div class="mb-3">
               <label class="form-label">Email *</label>
               <input type="email" class="form-control" formControlName="email"
-                     [class.is-invalid]="partnerForm.get('email')?.touched && partnerForm.get('email')?.invalid">
-              <div *ngIf="partnerForm.get('email')?.touched && partnerForm.get('email')?.invalid" class="invalid-feedback">
-                Email inválido
+                    [class.is-invalid]="pf['email'].touched && pf['email'].invalid">
+              <div *ngIf="pf['email'].touched && pf['email'].invalid" class="invalid-feedback">
+                <span *ngIf="pf['email'].errors?.['required']">El correo es requerido</span>
+                <span *ngIf="pf['email'].errors?.['email']">Ingresa un correo válido</span>
               </div>
             </div>
             
             <div class="mb-3">
               <label class="form-label">Contraseña *</label>
               <input type="password" class="form-control" formControlName="password"
-                     [class.is-invalid]="partnerForm.get('password')?.touched && partnerForm.get('password')?.invalid">
-              <div *ngIf="partnerForm.get('password')?.touched && partnerForm.get('password')?.invalid" class="invalid-feedback">
-                Mínimo 8 caracteres
+                    [class.is-invalid]="pf['password'].touched && pf['password'].invalid">
+              <div *ngIf="pf['password'].touched && pf['password'].invalid" class="invalid-feedback">
+                <span *ngIf="pf['password'].errors?.['required']">La contraseña es requerida</span>
+                <span *ngIf="pf['password'].errors?.['minlength']">Mínimo 8 caracteres</span>
               </div>
             </div>
             
             <div class="mb-3">
               <label class="form-label">Confirmar Contraseña *</label>
               <input type="password" class="form-control" formControlName="confirmPassword"
-                     [class.is-invalid]="partnerForm.errors?.['mismatch']">
+                    [class.is-invalid]="partnerForm.errors?.['mismatch']">
               <div *ngIf="partnerForm.errors?.['mismatch']" class="invalid-feedback">
                 Las contraseñas no coinciden
               </div>
@@ -85,51 +94,91 @@
     
     <!-- Paso 2: Información del Local -->
     <div class="page-content" *ngIf="currentStep === 2">
-      <!-- Formulario similar para info del local -->
+      <div class="container">
+        <div class="account-area">
+          <a (click)="prevStep()" class="back-btn dz-flex-box">
+            <i class="icon feather icon-chevron-left"></i>
+          </a>
+          <div class="section-head ps-0">
+            <h3>Información del Local</h3>
+            <p>Datos básicos de tu establecimiento</p>
+          </div>
+          
+          <form [formGroup]="partnerForm">
+            <div class="mb-3">
+              <label class="form-label">Nombre del Local *</label>
+              <input type="text" class="form-control" formControlName="venueName"
+                    [class.is-invalid]="pf['venueName'].touched && pf['venueName'].invalid">
+              <div *ngIf="pf['venueName'].touched && pf['venueName'].invalid" class="invalid-feedback">
+                Por favor ingresa el nombre de tu local
+              </div>
+            </div>
+            
+            <div class="mb-3">
+              <label class="form-label">Dirección *</label>
+              <input type="text" class="form-control" formControlName="address"
+                    [class.is-invalid]="pf['address'].touched && pf['address'].invalid">
+              <div *ngIf="pf['address'].touched && pf['address'].invalid" class="invalid-feedback">
+                Por favor ingresa la dirección
+              </div>
+            </div>
+            
+            <div class="mb-3">
+              <label class="form-label">Teléfono *</label>
+              <input type="tel" class="form-control" formControlName="phone"
+                    [class.is-invalid]="pf['phone'].touched && pf['phone'].invalid">
+              <div *ngIf="pf['phone'].touched && pf['phone'].invalid" class="invalid-feedback">
+                Por favor ingresa un número de teléfono válido
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
     </div>
     
     <!-- Paso 3: Detalles Adicionales -->
     <div class="page-content" *ngIf="currentStep === 3">
-      <!-- Formulario para detalles adicionales -->
+      <div class="container">
+        <div class="account-area">
+          <a (click)="prevStep()" class="back-btn dz-flex-box">
+            <i class="icon feather icon-chevron-left"></i>
+          </a>
+          <div class="section-head ps-0">
+            <h3>Detalles Adicionales</h3>
+            <p>Información adicional sobre tu local</p>
+          </div>
+          
+          <form [formGroup]="partnerForm">
+            <div class="mb-3">
+              <label class="form-label">Descripción</label>
+              <textarea class="form-control" formControlName="description" rows="3"></textarea>
+            </div>
+            
+            <div class="mb-3">
+              <label class="form-label">Capacidad</label>
+              <input type="number" class="form-control" formControlName="capacity">
+            </div>
+            
+            <div class="mb-3">
+              <label class="form-label">Horario de Apertura</label>
+              <input type="text" class="form-control" formControlName="openingHours" placeholder="Ej: 20:00 - 05:00">
+            </div>
+            
+            <div class="form-check mt-4">
+              <input class="form-check-input" type="checkbox" id="partnerTerms" formControlName="terms">
+              <label class="form-check-label" for="partnerTerms">
+                Acepto los términos y condiciones
+              </label>
+              <div *ngIf="pf['terms'].touched && pf['terms'].invalid" class="invalid-feedback">
+                Debes aceptar los términos y condiciones
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
     </div>
   </ng-container>
-  
-  <!-- Formulario para Clientes -->
-  <!-- Paso 1: Selección de tipo de usuario -->
-<div class="content-body" *ngIf="currentStep === 1 && !userType">
-    <div class="welcome-area bg-image">
-      <div class="welcome-inner">
-        <div class="dz-media">
-          <img src="../assets/images/onboarding/pic1.png" alt="">
-        </div>
-        
-        <div class="get-started">
-          <div class="slide-info">
-            <div class="started">
-              <h2 class="title mb-3">Start Your Dating Story</h2>
-              <p>Your companion for meaningful connections</p>
-            </div>
-          </div>
-        </div>
-      </div>
-      
-      <div class="bottom-btn container">
-        <div class="row g-3">
-          <div class="col-12">
-            <button (click)="selectUserType('partner')" class="btn btn-lg btn-primary w-100">
-              Soy un Local Nocturno
-            </button>
-          </div>
-          <div class="col-12">
-            <button (click)="selectUserType('client')" class="btn btn-lg btn-secondary w-100">
-              Soy un Cliente
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-  
+    
   <!-- Formulario para Clientes -->
   <ng-container *ngIf="userType === 'client'">
     <!-- Paso 1: Correo y Contraseña -->
@@ -391,13 +440,26 @@
       </div>
     </div>
   </div>
-  
+
   <!-- Footer para enviar -->
   <div class="footer fixed bg-white" *ngIf="userType && currentStep === (userType === 'partner' ? 3 : 4)">
     <div class="container">
-      <button (click)="onSubmit()" class="btn btn-success w-100" 
-              [disabled]="!clientForm.get('terms')?.value || clientForm.invalid">
-        Completar Registro
-      </button>
+      <ng-container *ngIf="userType === 'partner'">
+        <button (click)="onSubmit()" class="btn btn-success w-100" 
+                [disabled]="!partnerForm.get('terms')?.value || partnerForm.invalid">
+          {{ !partnerForm.get('terms')?.value ? 'Acepta los términos' : 
+             partnerForm.invalid ? 'Completa todos los campos requeridos' : 
+             'Completar Registro' }}
+        </button>
+      </ng-container>
+      
+      <ng-container *ngIf="userType === 'client'">
+        <button (click)="onSubmit()" class="btn btn-success w-100" 
+                [disabled]="!clientForm.get('terms')?.value || clientForm.invalid">
+          Completar Registro
+        </button>
+      </ng-container>
     </div>
   </div>
+  
+ 
