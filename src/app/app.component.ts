@@ -9,6 +9,10 @@ import { RegisterComponent } from './components/register/register.component';
 import { GlobalService } from './services/global.service';
 import { ProfileComponent } from './components/profile/profile.component';
 import { AuthPocketbaseService } from './services/authPocketbase.service';
+import { ProfileLocalComponent } from './components/profile-local/profile-local.component';
+import { MapComponent } from './components/map/map.component';
+import { FavoritesComponent } from './components/favorites/favorites.component';
+import { ChatComponent } from './components/chat/chat.component';
 
 @Component({
   selector: 'app-root',
@@ -20,7 +24,11 @@ import { AuthPocketbaseService } from './services/authPocketbase.service';
     HomeComponent,
     LoginComponent,
     RegisterComponent,
-    ProfileComponent
+    ProfileComponent,
+    ProfileLocalComponent,
+    MapComponent,
+    FavoritesComponent,
+    ChatComponent
   ],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']

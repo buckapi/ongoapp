@@ -7,4 +7,8 @@
   <app-register [hidden]="global.activeRoute!='register'"></app-register>
   <app-profile [hidden]="global.activeRoute!='profile'"></app-profile>
   <app-menubar [hidden]="global.activeRoute === 'login' || global.activeRoute === 'register'"></app-menubar>
+  <app-profile-local [hidden]="global.activeRoute!='profile-local'"></app-profile-local>
+  <app-map [hidden]="global.activeRoute!='map'"></app-map>
+  <app-favorites [hidden]="global.activeRoute!='favorites'"></app-favorites>
+  <app-chat [hidden]="global.activeRoute!='chat'"></app-chat>
 </div>
