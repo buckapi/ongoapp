@@ -1,7 +1,7 @@
 <!-- Paso 1: Selección de tipo de usuario -->
 <div class="content-body" *ngIf="currentStep === 1 && !userType">
     <div class="welcome-area bg-image">
-      <div class="welcome-inner">
+      <!-- <div class="welcome-inner">
         <div class="dz-media">
           <img src="../assets/images/onboarding/pic1.png" alt="">
         </div>
@@ -20,10 +20,53 @@
             </div>
           </div>
         </swiper-slide>
-        <!-- Más slides... -->
       </swiper-container> 
+      </div> -->
+      <div class="welcome-inner">
+        <div class="dz-media floating-avatars-container">
+          <!-- Map Background -->
+          <div class="map-background"></div>
+          
+          <!-- Floating Avatars -->
+          <!-- En tu archivo register.component.html, reemplaza las rutas de las imágenes: -->
+<div class="floating-avatar avatar-1">
+  <img src="https://i.pravatar.cc/150?img=1" alt="Avatar">
+</div>
+<div class="floating-avatar avatar-2">
+  <img src="https://i.pravatar.cc/150?img=5" alt="Avatar">
+</div>
+<div class="floating-avatar avatar-3">
+  <img src="https://i.pravatar.cc/150?img=9" alt="Avatar">
+</div>
+<div class="floating-avatar avatar-4">
+  <img src="https://i.pravatar.cc/150?img=15" alt="Avatar">
+</div>
+<div class="floating-avatar avatar-5">
+  <img src="https://i.pravatar.cc/150?img=20" alt="Avatar">
+</div>
+          
+          <!-- Location Pins -->
+          <div class="location-pin pin-1"></div>
+          <div class="location-pin pin-2"></div>
+          <div class="location-pin pin-3"></div>
+        </div>
+        
+        <swiper-container 
+          [slidesPerView]="swiperConfig.slidesPerView"
+          [spaceBetween]="swiperConfig.spaceBetween"
+          [pagination]="swiperConfig.pagination"
+          class="get-started"
+        >
+          <swiper-slide>
+            <div class="slide-info">
+              <div class="started">
+                <h2 class="title mb-3">OnGo</h2>
+                <p>Sal y disfruta de la vida nocturna</p>
+              </div>
+            </div>
+          </swiper-slide>
+        </swiper-container> 
       </div>
-      
       <div class="bottom-btn container">
         <div class="row g-3">
           <div class="col-12">

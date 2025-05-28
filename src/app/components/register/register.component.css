@@ -15,3 +15,115 @@
 .swiper-pagination-bullet-active {
   background: #E328AF;
 } */
+
+/* Floating Avatars Container */
+.floating-avatars-container {
+  position: relative;
+  width: 100%;
+  height: 300px;
+  overflow: hidden;
+  border-radius: 20px;
+  margin-bottom: 20px;
+}
+
+/* Map Background */
+.map-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url('https://img.freepik.com/vector-premium/navegacion-mapa-gps-propia-casa-vista-detallada-ciudad-fondo-transporte-abstracto_753943-107.jpg');
+  background-size: cover;
+  background-position: center;
+  opacity: 0.8;
+}
+
+/* Floating Avatars */
+.floating-avatar {
+  position: absolute;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  z-index: 2;
+}
+
+.floating-avatar img {
+  width: 80%;
+  height: 80%;
+  object-fit: contain;
+  border-radius: 50%;
+}
+
+/* Avatar Positions and Animations */
+.avatar-1 {
+  top: 20%;
+  left: 15%;
+  animation: float 8s ease-in-out infinite;
+}
+
+.avatar-2 {
+  top: 60%;
+  left: 25%;
+  animation: float 7s ease-in-out 1s infinite;
+}
+
+.avatar-3 {
+  top: 30%;
+  left: 70%;
+  animation: float 9s ease-in-out 0.5s infinite;
+}
+
+.avatar-4 {
+  top: 70%;
+  left: 65%;
+  animation: float 7.5s ease-in-out 1.5s infinite;
+}
+
+.avatar-5 {
+  top: 45%;
+  left: 45%;
+  animation: float 8.5s ease-in-out 0.8s infinite;
+}
+
+/* Location Pins */
+.location-pin {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  background: #f70192;
+  border-radius: 50%;
+  z-index: 1;
+}
+
+.location-pin::after {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: rgba(247, 1, 146, 0.3);
+  border-radius: 50%;
+  animation: pulse 2s infinite;
+}
+
+.pin-1 { top: 30%; left: 25%; }
+.pin-2 { top: 65%; left: 60%; }
+.pin-3 { top: 45%; left: 75%; }
+
+/* Animations */
+@keyframes float {
+  0% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-20px) rotate(5deg); }
+  100% { transform: translateY(0) rotate(0deg); }
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); opacity: 0.7; }
+  70% { transform: scale(3); opacity: 0; }
+  100% { transform: scale(1); opacity: 0; }
+}
