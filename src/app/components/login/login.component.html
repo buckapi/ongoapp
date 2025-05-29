@@ -42,15 +42,35 @@
           </button>
           
           <div class="terms-section">
-            <p>Al iniciar sesión, aceptas nuestros <a >Términos de servicio</a>, 
-            <a >Política de privacidad</a> y 
-            <a >Uso de cookies</a>.</p>
+            <p>Al iniciar sesión, aceptas nuestros 
+              <a href="#" (click)="$event.preventDefault(); openTermsModal('terms')" style="cursor: pointer;">Términos de servicio</a> y
+              <a href="#" (click)="$event.preventDefault(); openTermsModal('privacy')" style="cursor: pointer;">Política de privacidad</a> 
+            </p>
           </div>
         </form>
         
         <div class="register-link">
-          <p>¿No tienes una cuenta? <a (click)="global.setRoute('register')" style="color: #f70192;">Regístrate</a></p>
+          <p>¿No tienes una cuenta? <a (click)="global.setRoute('register')" style="color: #f70192; cursor: pointer;">Regístrate</a></p>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div class="modal-overlay" *ngIf="showModal" (click)="closeModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>{{ modalTitle }}</h2>
+        <button class="close-button" (click)="closeModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <ng-container *ngIf="modalContent === 'terms'">
+          <app-terms></app-terms>
+        </ng-container>
+        <ng-container *ngIf="modalContent === 'privacy'">
+          <app-privacy></app-privacy>
+        </ng-container>
+        
       </div>
     </div>
   </div>

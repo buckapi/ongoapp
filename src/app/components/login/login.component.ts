@@ -5,16 +5,21 @@ import Swal from 'sweetalert2';
 import { AuthPocketbaseService } from '../../services/authPocketbase.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { TermsComponent } from '../terms/terms.component';
+import { PrivacyComponent } from '../privacy/privacy.component';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule],  
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, TermsComponent, PrivacyComponent],  
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css']
 })
 export class LoginComponent {
   loginForm: FormGroup;
+  showModal: boolean = false;
+  modalTitle: string = '';
+  modalContent: 'terms' | 'privacy' | null = null;
 
   constructor(
     private fb: FormBuilder,
@@ -26,6 +31,26 @@ export class LoginComponent {
       password: ['', Validators.required],
       remember: [false]
     });
+  }
+
+  openTermsModal(type: 'terms' | 'privacy') {
+    console.log('Opening modal with type:', type);
+    this.modalContent = type;
+    switch (type) {
+      case 'terms':
+        this.modalTitle = 'Términos y Condiciones';
+        break;
+      case 'privacy':
+        this.modalTitle = 'Política de Privacidad';
+        break;
+    }
+    this.showModal = true;
+    console.log('Modal state:', { showModal: this.showModal, modalTitle: this.modalTitle, modalContent: this.modalContent });
+  }
+
+  closeModal() {
+    this.showModal = false;
+    this.modalContent = null;
   }
 
   onSubmit() {

@@ -13,6 +13,8 @@ import { ProfileLocalComponent } from './components/profile-local/profile-local.
 import { MapComponent } from './components/map/map.component';
 import { FavoritesComponent } from './components/favorites/favorites.component';
 import { ChatComponent } from './components/chat/chat.component';
+import { ChatDetailComponent } from './components/chat-detail/chat-detail.component';
+import { DetailprofileComponent } from './components/detailprofile/detailprofile.component';
 
 @Component({
   selector: 'app-root',
@@ -28,7 +30,9 @@ import { ChatComponent } from './components/chat/chat.component';
     ProfileLocalComponent,
     MapComponent,
     FavoritesComponent,
-    ChatComponent
+    ChatComponent,
+    ChatDetailComponent,
+    DetailprofileComponent
   ],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']

@@ -7,17 +7,22 @@ import { GlobalService } from '../../services/global.service';
 import { register as registerSwiperElements } from 'swiper/element/bundle';
 import { CdkScrollable } from '@angular/cdk/scrolling';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { TermsComponent } from '../terms/terms.component';
+import { PrivacyComponent } from '../privacy/privacy.component';
 registerSwiperElements();
 
 @Component({
   selector: 'app-register',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule,],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, TermsComponent, PrivacyComponent],
   templateUrl: './register.component.html',
   styleUrls: ['./register.component.css'],
   schemas: [NO_ERRORS_SCHEMA]
 })
 export class RegisterComponent {
+  showModal: boolean = false;
+  modalTitle: string = '';
+  modalContent: 'terms' | 'privacy' | null = null;
   currentStep = 1;
   userType: 'partner' | 'client' | null = null;
 
@@ -110,7 +115,26 @@ export class RegisterComponent {
     }
     return null;
   }
+  
+  openTermsModal(type: 'terms' | 'privacy') {
+    console.log('Opening modal with type:', type);
+    this.modalContent = type;
+    switch (type) {
+      case 'terms':
+        this.modalTitle = 'Términos y Condiciones';
+        break;
+      case 'privacy':
+        this.modalTitle = 'Política de Privacidad';
+        break;
+    }
+    this.showModal = true;
+    console.log('Modal state:', { showModal: this.showModal, modalTitle: this.modalTitle, modalContent: this.modalContent });
+  }
 
+  closeModal() {
+    this.showModal = false;
+    this.modalContent = null;
+  }
   async onSubmit() {
     try {
       if (this.userType === 'partner') {
@@ -356,7 +380,7 @@ export class RegisterComponent {
   }
 
   // Manejo de imágenes
-  async handleFileInput(event: any, index: number) {
+  /* async handleFileInput(event: any, index: number) {
     const file = event.target.files[0];
     if (file) {
       const formData = new FormData();
@@ -370,7 +394,19 @@ export class RegisterComponent {
         console.error('Error subiendo foto:', error);
       }
     }
-  }
+  } */
+  
+    handleFileInput(event: any, index: number) {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (e: any) => {
+          const imageUrl = e.target.result;
+          this.photosArray.at(index).setValue(imageUrl);
+        };
+        reader.readAsDataURL(file);
+      }
+    }
   validateAge(control: AbstractControl): ValidationErrors | null {
     const birthDate = new Date(control.value);
     const ageDiff = Date.now() - birthDate.getTime();

@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { GlobalService } from '../../services/global.service';
 
 @Component({
   selector: 'app-favorites',
@@ -7,5 +8,5 @@ import { Component } from '@angular/core';
   styleUrl: './favorites.component.css'
 })
 export class FavoritesComponent {
-
+constructor(public global: GlobalService) {}
 }

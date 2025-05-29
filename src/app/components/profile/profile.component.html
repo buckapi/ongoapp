@@ -1,100 +1,179 @@
 <!-- Page Content Start -->
-<div class="page-content space-top p-b60">
+<div class="page-content space-top p-b60" *ngIf="!isEditProfile">
     <div class="container pt-0"> 
         <div class="profile-area">
             <div class="main-profile">
                 <div class="about-profile">
-                    <a href="setting.html" class="setting dz-icon">
+                    <a class="setting dz-icon">
                         <i class="flaticon flaticon-setting"></i>
                     </a>
-                    <div class="media rounded-circle">
-                        <img src="../assets/images/user/pic1.jpg" alt="profile-image">
+                    <div class="media rounded-circle position-relative">
+                        <img [src]="auth.currentUser?.avatar || 'assets/images/default-avatar.png'" alt="profile-image" class="profile-avatar">
                         <svg class="radial-progress m-b20" data-percentage="40" viewBox="0 0 80 80">
                             <circle class="incomplete" cx="40" cy="40" r="35"></circle>
                             <circle class="complete" cx="40" cy="40" r="35" style="stroke-dashoffset: 39.58406743523136;"></circle>
                         </svg>
                         <div class="data-fill"><span>40%</span></div>
                     </div>
-                    <a href="edit-profile.html" class="edit-profile dz-icon">
+                    <a (click)="isEditProfile = true" class="edit-profile dz-icon">
                         <i class="flaticon flaticon-pencil-2"></i>
                     </a>
                 </div>
+                
                 <div class="profile-detail">
-                    <h5 class="name">Richard, 20</h5>
-                    <p class="mb-0"><i class="icon feather icon-map-pin me-1"></i> Mentreal, Canada</p>
+                    <div class="profile-header mb-4">
+                        <h2 class="profile-name">{{auth.getFullName()}}</h2>
+                        <div class="d-flex align-items-center location text-muted">
+                            <i class="icon feather icon-map-pin me-2"></i> 
+                            <span>5 miles away</span>
+                        </div>
+                    </div>
+                    <div class="detail-bottom-area">
+                        <div class="about">
+                            <h6 class="title" style="text-align:start;">Sobre mí</h6>
+                            <p class="para-text">Just moved back to jakarata after living at India for 10+ years. Di luar terlifiat cenger - center di dalam.</p>					
+                            <h6 class="title" style="text-align:start;">Edad</h6>
+                            <p> {{auth.currentUser?.age || 'No especificada'}}</p>
+                       
+                        </div>
+                        <div class="about">
+                            <h6 class="title" style="text-align:start;">Genero</h6>
+                            <p> {{auth.currentUser?.gender || 'No especificado'}}</p>
+                       
+                        </div>
+                        <div class="about">
+                            <h6 class="title" style="text-align:start;">Orientación</h6>
+                            <p> {{auth.currentUser?.orientation || 'No especificado'}}</p>
+                       
+                        </div>
+                        <div class="about">
+                            <h6 class="title" style="text-align:start;">Objetivo</h6>
+                            <p> {{auth.currentUser?.relationshipGoal || 'No especificado'}}</p>
+                       
+                        </div>
+                        <div class="intrests mb-3">
+                            <h6 class="title" style="text-align:start;">Intereses</h6>
+                            <ul class="dz-tag-list">
+                                <li> 
+                                    <div class="dz-tag">
+                                        <i class="icon feather icon-camera"></i>
+                                        <span>{{auth.currentUser?.interests || 'No especificados'}}</span>
+                                    </div>
+                                </li>
+
+                            </ul>
+                        </div>
+                        <div class="languages mb-3">
+                            <h6 class="title" style="text-align:start;">Idiomas</h6>
+                            <ul class="dz-tag-list">
+                                <li> 
+                                    <div class="dz-tag">
+                                        <span>English</span>
+                                    </div>
+                                </li>
+                                <li> 
+                                    <div class="dz-tag">
+                                        <span>Spanish</span>
+                                    </div>
+                                </li>
+                                <li> 
+                                    <div class="dz-tag">
+                                        <span>German</span>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div class="row g-2 mb-5">
-                <div class="col-4">
-                    <div class="card style-2">
-                        <div class="card-body">
-                            <a href="javascript:void(0);" data-bs-toggle="offcanvas" data-bs-target="#offcanvasBottom" aria-controls="offcanvasBottom">	
-                                <div class="card-icon">
-                                    <i class="flaticon flaticon-star-1"></i>
-                                </div>
-                                <div class="card-content">
-                                    <p>0 Super Likes</p>
-                                </div>
-                                <i class="icon feather icon-plus"></i>
-                            </a>
+            
+            <div class="stats-cards">
+                <div class="row g-2 mb-4">
+                    <div class="col-6">
+                        <div class="card style-2 stats-card">
+                            <div class="card-body">
+                                <a href="javascript:void(0);" data-bs-toggle="offcanvas" data-bs-target="#offcanvasBottom" aria-controls="offcanvasBottom">	
+                                    <div class="card-icon">
+                                        <i class="flaticon flaticon-star-1"></i>
+                                    </div>
+                                    <div class="card-content">
+                                        <p>Super Likes</p>
+                                        <div class="stat-value">0</div>
+                                    </div>
+                                </a>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="col-4">
-                    <div class="card style-2">
-                        <div class="card-body">
-                            <div class="card-icon">
-                                <i class="flaticon flaticon-shuttle"></i>
+                    <div class="col-6">
+                        <div class="card style-2 stats-card">
+                            <div class="card-body">
+                                <a>
+                                    <div class="card-icon">
+                                        <i class="flaticon flaticon-bell"></i>
+                                    </div>
+                                    <div class="card-content">
+                                        <p>Subscripciones</p>
+                                        <div class="stat-value">0</div>
+                                    </div>
+                                </a>
                             </div>
-                            <div class="card-content">
-                                <p>My Boosts</p>
-                            </div>
-                            <i class="icon feather icon-plus"></i>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-4">
-                    <div class="card style-2">
-                        <div class="card-body">
-                            <a href="subscription.html">
-                                <div class="card-icon">
-                                    <i class="flaticon flaticon-bell"></i>
-                                </div>
-                                <div class="card-content">
-                                    <p>Subscriptions</p>
-                                </div>
-                                <i class="icon feather icon-plus"></i>
-                            </a>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="swiper subscription-swiper">
-                <div class="swiper-wrapper mb-3">
-                    <div class="swiper-slide">
-                        <div class="dz-content">
-                            <h5 class="title">Get Dating Plus</h5>
-                            <p>Get Unlimited Likes, Passport and more!</p>
-                            <a href="subscription.html" class="btn rounded-xl">Get Dating Plus</a>
+            
+            <div class="subscription-section">
+                <h3 class="section-title">Mejora tu experiencia</h3>
+                <p class="section-subtitle">Desbloquea características exclusivas con nuestros planes premium</p>
+                
+                <div class="swiper subscription-swiper">
+                    <div class="swiper-wrapper">
+                        <div class="swiper-slide">
+                            <div class="dz-content subscription-card">
+                                <div class="card-header">
+                                    <h5 class="title">OnGo Plus</h5>
+                                    <div class="price">$9.99<span>/mes</span></div>
+                                </div>
+                                <ul class="features-list">
+                                    <li>Interacciones ilimitadas</li>
+                                    <li>Ver quién te dio like</li>
+                                    <li>5 Super Likes al mes</li>
+                                </ul>
+                                <a class="btn rounded-xl">Suscribirse</a>
+                            </div>
+                        </div>
+                        <div class="swiper-slide">
+                            <div class="dz-content subscription-card">
+                                <div class="card-header">
+                                    <h5 class="title">OnGo Gold</h5>
+                                    <div class="price">$19.99<span>/mes</span></div>
+                                </div>
+                                <ul class="features-list">
+                                    <li>Todas las características Plus</li>
+                                    <li>Super Likes ilimitados</li>
+                                    <li>Perfil destacado</li>
+                                </ul>
+                                <a class="btn rounded-xl">Suscribirse</a>
+                            </div>
+                        </div>
+                        <div class="swiper-slide">
+                            <div class="dz-content subscription-card">
+                                <div class="card-header">
+                                    <h5 class="title">OnGo Platinum</h5>
+                                    <div class="price">$29.99<span>/mes</span></div>
+                                </div>
+                                <ul class="features-list">
+                                    <li>Todas las características Gold</li>
+                                    <li>Análisis de perfil avanzado</li>
+                                    <li>Soporte prioritario</li>
+                                </ul>
+                                <a class="btn rounded-xl">Suscribirse</a>
+                            </div>
                         </div>
                     </div>
-                    <div class="swiper-slide">
-                        <div class="dz-content">
-                            <h5 class="title">Get Dating Gold</h5>
-                            <p>Get Unlimited Likes, Passport and more!</p>
-                            <a href="subscription.html" class="btn rounded-xl">Get Dating Gold</a>
-                        </div>
+                    <div class="swiper-btn">
+                        <div class="swiper-pagination style-1 flex-1"></div>
                     </div>
-                    <div class="swiper-slide">
-                        <div class="dz-content">
-                            <h5 class="title">Get Dating Platinum</h5>
-                            <p>Get Unlimited Likes, Passport and more!</p>
-                            <a href="subscription.html" class="btn rounded-xl">Get Dating Platinum</a>
-                        </div>
-                    </div>
-                </div>
-                <div class="swiper-btn">
-                    <div class="swiper-pagination style-1 flex-1"></div>
                 </div>
             </div>
         </div>
@@ -110,8 +189,8 @@
             <div class="icon-bx dz-flex-box mx-auto mb-3">
                 <i class="flaticon flaticon-star-1"></i>
             </div>
-            <h6>Stant out with Super Like</h6>
-            <p>You're 3x more likely to get a match!</p>
+            <h6>Super Like</h6>
+            <p>3x más probable de obtener una coincidencia!</p>
             
             <div class="short-tag" role="group" aria-label="radio toggle button">
                 <div class="clearfix">
@@ -146,3 +225,240 @@
     </div>
 </div>
 <!-- Like OffCanvas -->
+
+
+<div class="page-content space-top" *ngIf="isEditProfile">
+    <div class="container edit-profile-container"> 
+      <!-- Sección de avatar -->
+      <div class="profile-area">
+        <div class="main-profile">
+          <div class="about-profile">
+            <div class="media rounded-circle">
+              <img [src]="avatarPreview || auth.currentUser?.avatar" alt="profile-image">
+              <input type="file" accept="image/*" (change)="onAvatarSelected($event)" class="d-none" #avatarInput>
+              <button type="button" class="btn btn-sm btn-primary mt-2" (click)="avatarInput.click()">
+                Cambiar foto
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Galería de imágenes y campos editables -->
+      <div class="gallery-section">
+        <div class="row g-2 m-b30" data-masonry='{"percentPosition": true }'>
+          <div class="col-4" *ngFor="let photo of photos; let i = index">
+            <div class="dz-drop-box style-2">
+              <div class="drop-bx">
+                <div class="imagePreview" [style.backgroundImage]="'url(' + (photo.url || '../assets/images/recent-pic/drop-bx2.png') + ')'">
+                  <label [attr.for]="'imageUpload' + i" class="add-btn">
+                    <i class="icon feather icon-plus"></i>
+                  </label>
+                  <div class="remove-img remove-btn" (click)="removePhoto(i)">
+                    <i class="icon feather icon-x"></i>
+                  </div>
+                  <input type="file" [id]="'imageUpload' + i" class="form-control d-none imageUpload" 
+                         (change)="onPhotoSelected($event, i)" accept=".png, .jpg, .jpeg">
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <button class="btn btn-gradient mb-3 btn-block rounded-xl" (click)="addPhoto()">
+          AÑADIR MEDIA
+        </button>
+        
+        <!-- Campos editables -->
+        <div class="card style-4">
+          <div class="card-header">
+            <h6 class="title mb-0">Intereses</h6>
+          </div>
+          <div class="card-body">
+            <a href="javascript:void(0);" class="setting-input" 
+               data-bs-toggle="offcanvas" data-bs-target="#offcanvasBottom1" aria-controls="offcanvasBottom1">
+              <span>{{profileData.interests || 'Photography, Tea, Travel'}}</span>
+              <i class="icon feather dz-flex-box icon-chevron-right ms-auto me-0"></i>
+            </a>
+          </div>
+        </div>
+        
+        <div class="card style-4">
+          <div class="card-header">
+            <h6 class="title mb-0">Objetivos de relación</h6>
+          </div>
+          <div class="card-body">
+            <a href="javascript:void(0);" class="setting-input" 
+               data-bs-toggle="offcanvas" data-bs-target="#offcanvasBottom2" aria-controls="offcanvasBottom2">
+              <span>{{profileData.relationshipGoal || 'Long-term partner'}}</span>
+              <i class="icon feather dz-flex-box icon-chevron-right ms-auto me-0"></i>
+            </a>
+          </div>
+        </div>
+        
+        <div class="card style-4">
+          <div class="card-header">
+            <h6 class="title mb-0">Idiomas que hablo</h6>
+          </div>
+          <div class="card-body">
+            <a href="javascript:void(0);" class="setting-input" 
+               data-bs-toggle="offcanvas" data-bs-target="#offcanvasLang" aria-controls="offcanvasLang">
+              <span class="select-lang">{{profileData.language || 'English'}}</span>
+              <i class="icon feather dz-flex-box icon-chevron-right ms-auto me-0"></i>
+            </a>
+          </div>
+        </div>
+        
+        <div class="card style-4">
+          <div class="card-header">
+            <h6 class="title mb-0">Orientación sexual</h6>
+          </div>
+          <div class="card-body">
+            <a href="javascript:void(0);" class="setting-input" 
+               data-bs-toggle="offcanvas" data-bs-target="#offcanvasBottom3" aria-controls="offcanvasBottom3">
+              <span>{{profileData.sexualOrientation || 'Straight'}}</span>
+              <i class="icon feather dz-flex-box icon-chevron-right ms-auto me-0"></i>
+            </a>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Botones de acción fijos en la parte inferior -->
+      <div class="action-buttons">
+        <div class="d-flex gap-2">
+          <button type="button" class="btn btn-light flex-grow-1" (click)="cancelEdit()">
+            Cancelar
+          </button>
+          <button type="button" class="btn btn-primary flex-grow-1" (click)="saveProfile()">
+            Guardar
+          </button>
+        </div>
+      </div>
+    </div> 
+</div>
+
+<!-- Offcanvases para edición -->
+<!-- Interest OffCanvas -->
+<div class="offcanvas offcanvas-bottom intrests" tabindex="-1" id="offcanvasBottom1">
+  <div class="offcanvas-header share-style">
+    <h6 class="title mb-0">Intereses</h6>
+    <button type="button" class="btn-close dz-flex-box" data-bs-dismiss="offcanvas" aria-label="Close">
+      <i class="icon feather icon-x font-22"></i>
+    </button>
+  </div>
+  <div class="offcanvas-body">
+    <div class="input-group input-group-icon search-input">
+      <input type="search" class="form-control ms-0" 
+             placeholder="Buscar..." 
+             [(ngModel)]="interestSearch" 
+             (input)="filterInterests()">
+      <div class="input-group-text">
+        <div class="input-icon">
+          <i class="icon feather icon-search"></i>
+        </div>
+      </div>
+    </div>
+    <ul class="dz-tag-list style-2">
+      <li *ngFor="let interest of filteredInterests">
+        <div class="dz-tag" 
+             [class.active]="selectedInterests.includes(interest)"
+             (click)="toggleInterest(interest)">
+          <span>{{interest}}</span>
+        </div>
+      </li>
+    </ul>
+    <div class="mt-3">
+      <button class="btn btn-primary w-100" 
+              data-bs-dismiss="offcanvas"
+              (click)="saveInterests()">
+        Guardar
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Relationship OffCanvas -->
+<div class="offcanvas offcanvas-bottom" tabindex="-1" id="offcanvasBottom2">
+  <button type="button" class="btn-close drage-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+  <div class="offcanvas-header share-style m-0 pb-0">
+    <h6 class="title">Objetivos de relación</h6>
+  </div>
+  <div class="offcanvas-body">
+    <div class="radio style-4 row g-2">
+      <div class="col-4" *ngFor="let goal of relationshipGoals">
+        <label class="radio-label">
+          <input type="radio" [name]="'relationshipGoal'" 
+                 [value]="goal.value" 
+                 [(ngModel)]="profileData.relationshipGoal">
+          <span class="checkmark">
+            <img [src]="goal.icon" alt="">                            
+            <span class="text">{{goal.label}}</span>  
+          </span>
+        </label>
+      </div>
+    </div>
+    <div class="mt-3">
+      <button class="btn btn-primary w-100" 
+              data-bs-dismiss="offcanvas"
+              (click)="saveRelationshipGoal()">
+        Guardar
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Language OffCanvas -->
+<div class="offcanvas offcanvas-bottom" tabindex="-1" id="offcanvasLang">
+  <div class="offcanvas-header share-style">
+    <h6 class="title mb-0">Idiomas</h6>
+    <button type="button" class="btn-close dz-flex-box" data-bs-dismiss="offcanvas" aria-label="Close">
+      <i class="icon feather icon-x font-22"></i>
+    </button>
+  </div>
+  <div class="offcanvas-body">
+    <div class="dz-list">
+      <ul class="mb-2 confirm-lang">
+        <li *ngFor="let lang of languages" 
+            [class.border-0]="lang === languages[languages.length - 1]">
+          <a href="javascript:void(0);" class="item-content py-2 item-link"
+             (click)="selectLanguage(lang)">
+            <div class="media media-30 me-3">
+              <img [src]="lang.flag" alt="/">
+            </div>
+            <div class="dz-inner">
+              <span class="title">{{lang.name}}</span>
+            </div>
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- Orientation OffCanvas -->
+<div class="offcanvas offcanvas-bottom" tabindex="-1" id="offcanvasBottom3">
+  <button type="button" class="btn-close drage-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+  <div class="offcanvas-header share-style m-0 pb-0">
+    <h6 class="title">Orientación sexual</h6>
+  </div>
+  <div class="offcanvas-body">
+    <div>
+      <div class="form-check mb-3" *ngFor="let orientation of sexualOrientations">
+        <input class="form-check-input" type="radio" 
+               name="sexualOrientation" 
+               [id]="'orientation' + orientation.value"
+               [value]="orientation.value"
+               [(ngModel)]="profileData.sexualOrientation">
+        <label class="form-check-label" [for]="'orientation' + orientation.value">
+          {{orientation.label}}
+        </label>
+      </div>
+    </div>
+    <div class="mt-3">
+      <button class="btn btn-primary w-100" 
+              data-bs-dismiss="offcanvas"
+              (click)="saveSexualOrientation()">
+        Guardar
+      </button>
+    </div>
+  </div>
+</div>
