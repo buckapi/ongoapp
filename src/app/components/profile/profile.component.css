@@ -177,10 +177,7 @@
 .search-input {
   margin-bottom: 1rem;
   position: sticky;
-  top: 0;
-  background: white;
-  z-index: 10;
-  padding: 0.5rem 0;
+    z-index: 10;
 }
 
 

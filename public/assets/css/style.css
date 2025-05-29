@@ -2217,7 +2217,7 @@ textarea.form-control-lg {
 .input-group {
   position: relative;
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: initial;
   align-items: stretch;
   width: 100%; }
   .input-group > .form-control,
@@ -18575,7 +18575,7 @@ svg.radial-progress {
     border-radius: var(--border-radius);
     padding: 4px 8px; }
     .dz-tag-list.style-2 .dz-tag > span {
-      color: var(--body-color);
+      color: #000;
       font-size: 12px; }
 
 .dz-icon-box {
