@@ -1,5 +1,5 @@
 	<!-- Menubar -->
-	<div class="menubar-area footer-fixed">
+	<div class="menubar-area footer-fixed" [hidden]="global.activeRoute === 'profile'">
 		<div class="toolbar-inner menubar-nav">
 			<a  class="nav-link active" (click)="global.setRoute('home')">
 				<i class="flaticon flaticon-dog-house"></i>
