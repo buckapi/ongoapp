@@ -94,7 +94,7 @@
 .action-buttons {
   position: sticky;
   bottom: 0;
-  padding: 2rem 0;
+  padding: 3rem 0;
   box-shadow: 0 -5px 15px rgba(0,0,0,0.05);
   z-index: 1000;
 }
