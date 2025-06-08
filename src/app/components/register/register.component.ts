@@ -22,16 +22,15 @@ registerSwiperElements();
 export class RegisterComponent {
   showModal: boolean = false;
   modalTitle: string = '';
+  isSubmitting = false;
   modalContent: 'terms' | 'privacy' | null = null;
   currentStep = 1;
-  userType: 'partner' | 'client' | null = null;
-
-  // Formulario para partners
+  userType: 'partner' | 'client' | null = null; 
+  // Formulario principal
+  formType: 'partner' | 'client' = 'partner';
+  // FormGroups separados
   partnerForm: FormGroup;
-
-  // Formulario para clientes
   clientForm: FormGroup;
-
   // Configuración del swiper
   swiperConfig = {
     slidesPerView: 1,
@@ -47,8 +46,6 @@ export class RegisterComponent {
     public auth: AuthPocketbaseService,
     public global: GlobalService
   ) {
-
-
     // Formulario para partners (locales nocturnos)
     this.partnerForm = this.fb.group({
       // Paso 1
@@ -69,19 +66,20 @@ export class RegisterComponent {
     }, {
       validators: [this.passwordMatchValidator, this.validateOpeningHours]
     });
-
+    
     // Formulario para clientes
     this.clientForm = this.fb.group({
-      // Paso 1 - Información básica
+      // Paso 1 - Credenciales
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(8)]],
       confirmPassword: ['', Validators.required],
-
+    
       // Paso 2 - Información personal
-      firstName: ['', Validators.required],
-      birthDate: ['', [Validators.required, this.validateAge]],
+      firstName: ['', Validators.required], // Se mapeará a name
+      address: ['', Validators.required],   // Si no necesitas address, puedes quitarlo aquí y en el backend
+      birthday: ['', [Validators.required, this.validateAge]],
       gender: ['Women', Validators.required],
-
+    
       // Paso 3 - Preferencias
       orientation: this.fb.group({
         straight: [false],
@@ -92,17 +90,12 @@ export class RegisterComponent {
         queer: [false],
         demisexual: [false]
       }),
-      interestedIn: ['Women', Validators.required],
-      lookingFor: ['Long-term partner', Validators.required],
-
-      // Paso 4 - Fotos (usamos FormArray para múltiples imágenes)
-      photos: this.fb.array(Array(6).fill(null)),
-
+      interestedIn: ['', Validators.required],
+      lookingFor: ['', Validators.required],
+    
       // Términos y condiciones
       terms: [false, Validators.requiredTrue]
-    }, {
-      validators: this.passwordMatchValidator
-    });
+    }, { validators: this.passwordMatchValidator });
   }
   // Agrega este getter para acceder fácilmente a los controles del formulario de partner
   get pf() {
@@ -165,7 +158,7 @@ export class RegisterComponent {
     }
   }
   
-  async registerPartner() {
+  /* async registerPartner() {
     if (this.partnerForm.invalid) {
       this.markPartnerFieldsAsTouched(this.currentStep);
       return;
@@ -203,7 +196,7 @@ export class RegisterComponent {
     await this.auth.loginUser(formData.email, formData.password).toPromise();
   
     // 5. Redirigir al dashboard de partner
-    this.global.setRoute('home-partner');
+    this.global.setRoute('profile-local');
   
     // 6. Mostrar confirmación
     Swal.fire({
@@ -212,9 +205,11 @@ export class RegisterComponent {
       icon: 'success',
       confirmButtonText: 'Entendido'
     });
+    this.isSubmitting = false;
   }
   
   async registerClient() {
+    this.isSubmitting = true;
     if (this.clientForm.invalid) {
       this.markClientFieldsAsTouched(this.currentStep);
       return;
@@ -234,14 +229,17 @@ export class RegisterComponent {
   
       // 2. Preparar datos adicionales del cliente
       const clientData: any = {
-        userId: userResponse.id,
-        birthDate: new Date(formData.birthDate).toISOString(),
+        name: formData.firstName,
+        address: formData.address,
+        phone: '', // Si lo quieres pedir, agrégalo al formulario
+        birthday: new Date(formData.birthday).toISOString(),
         gender: formData.gender,
-        orientation: this.getSelectedOrientations(),
+        orientation: formData.orientation,
         interestedIn: formData.interestedIn,
         lookingFor: formData.lookingFor,
         profileComplete: true,
-        email: formData.email
+        email: formData.email,
+        status: 'pending', // O el valor que corresponda
       };
   
       // 3. Guardar en la colección usuariosClient
@@ -264,8 +262,109 @@ export class RegisterComponent {
       console.error('Error registrando cliente:', error);
       throw error; // Re-lanzar el error para que lo maneje onSubmit
     }
-  }
+    this.isSubmitting = false;
+  } */
 
+
+    async registerPartner() {
+      this.isSubmitting = true;
+      if (this.partnerForm.invalid) {
+        this.markPartnerFieldsAsTouched(this.currentStep);
+        this.isSubmitting = false;
+        return;
+      }
+    
+      const formData = this.partnerForm.value;
+    
+      // 1. Registrar usuario base
+      const userResponse = await this.auth.onlyRegisterUser(
+        formData.email,
+        formData.password,
+        'partner',
+        formData.venueName
+      ).toPromise();
+    
+      // 2. Preparar y guardar perfil en usuariosPartner
+      const partnerData: any = {
+        userId: userResponse.id,
+        venueName: formData.venueName,
+        address: formData.address,
+        phone: formData.phone,
+        description: formData.description,
+        capacity: formData.capacity,
+        openingHours: formData.openingHours,
+        lat: formData.lat,
+        lng: formData.lng,
+        email: formData.email,
+        status: 'pending',
+        approved: false
+      };
+    
+      await this.auth.pb.collection('usuariosPartner').create(partnerData);
+    
+      // 3. Autologin y redirección
+      await this.auth.loginUser(formData.email, formData.password).toPromise();
+      this.global.setRoute('profile-local');
+    
+      Swal.fire({
+        title: 'Registro Exitoso',
+        text: 'Tu local ha sido registrado. Estará activo después de la aprobación.',
+        icon: 'success',
+        confirmButtonText: 'Entendido'
+      });
+    
+      this.isSubmitting = false;
+    }
+    
+    async registerClient() {
+      this.isSubmitting = true;
+      if (this.clientForm.invalid) {
+        this.markClientFieldsAsTouched(this.currentStep);
+        this.isSubmitting = false;
+        return;
+      }
+    
+      const formData = this.clientForm.value;
+    
+      // 1. Registrar usuario base
+      const userResponse = await this.auth.onlyRegisterUser(
+        formData.email,
+        formData.password,
+        'client',
+        formData.firstName
+      ).toPromise();
+    
+      // 2. Preparar y guardar perfil en usuariosClient
+      const clientData: any = {
+        userId: userResponse.id,
+        name: formData.firstName,
+        address: formData.address,
+        birthday: new Date(formData.birthday).toISOString(),
+        gender: formData.gender,
+        orientation: formData.orientation,
+        interestedIn: formData.interestedIn,
+        lookingFor: formData.lookingFor,
+        email: formData.email,
+        profileComplete: true,
+        status: 'pending'
+      };
+    
+      await this.auth.pb.collection('usuariosClient').create(clientData);
+    
+      // 3. Autologin y redirección
+      await this.auth.loginUser(formData.email, formData.password).toPromise();
+      this.global.setRoute('profile');
+    
+      Swal.fire({
+        title: 'Registro Completo',
+        text: 'Tu perfil ha sido creado exitosamente',
+        icon: 'success',
+        confirmButtonText: 'Continuar'
+      });
+    
+      this.isSubmitting = false;
+    }
+    
   // Generar contraseña aleatoria para clientes (que usan OTP)
   generateRandomPassword(): string {
     return Math.random().toString(36).slice(-8);
@@ -309,28 +408,80 @@ export class RegisterComponent {
   }
 
   // Validador de coincidencia de contraseñas
-  passwordMatchValidator(form: FormGroup) {
+  passwordMatchValidator(form: AbstractControl): ValidationErrors | null {
     const password = form.get('password')?.value;
     const confirmPassword = form.get('confirmPassword')?.value;
-
-    if (password !== confirmPassword) {
-      form.get('confirmPassword')?.setErrors({ mismatch: true });
+  
+    if (password && confirmPassword && password !== confirmPassword) {
       return { mismatch: true };
-    } else {
-      form.get('confirmPassword')?.setErrors(null);
-      return null;
     }
+    return null;
   }
+  
 
   // Manejo de selección de tipo de usuario
   selectUserType(type: 'partner' | 'client') {
     this.userType = type;
     this.nextStep();
+    if (type === 'partner') {
+      this.setPartnerStepValidators(1);
+    }
+    if (type === 'client') {
+      this.setClientStepValidators(1);
+    }
+  }
+  setClientStepValidators(step: number) {
+    // Limpiar validadores de todos los campos
+    const controls = this.clientForm.controls;
+    Object.keys(controls).forEach(key => {
+      controls[key].clearValidators();
+      controls[key].updateValueAndValidity({ emitEvent: false });
+    });
+  
+    // Paso 1: Credenciales
+    if (step === 1) {
+      controls['email'].setValidators([Validators.required, Validators.email]);
+      controls['password'].setValidators([Validators.required, Validators.minLength(8)]);
+      controls['confirmPassword'].setValidators([Validators.required]);
+    }
+    // Paso 2: Datos del cliente
+    else if (step === 2) {
+      controls['firstName'].setValidators([Validators.required, Validators.maxLength(100)]);
+      controls['address'].setValidators([Validators.required, Validators.maxLength(200)]);
+      controls['phone'].setValidators([Validators.required, Validators.pattern(/^[0-9]{10,15}$/)]);
+    }
+    // Actualizar validadores
+    Object.keys(controls).forEach(key => controls[key].updateValueAndValidity({ emitEvent: false }));
+  
+    // Mantener el validador de grupo (coincidencia de contraseñas)
+    this.clientForm.setValidators(this.passwordMatchValidator);
+    this.clientForm.updateValueAndValidity({ emitEvent: false });
   }
 
   // Navegación entre pasos
+
   nextStep() {
-    // Validar campos antes de avanzar
+    if (this.userType === 'partner') {
+      if (this.currentStep === 1 &&
+          (this.partnerForm.get('email')?.invalid ||
+           this.partnerForm.get('password')?.invalid ||
+           this.partnerForm.get('confirmPassword')?.invalid ||
+           this.partnerForm.errors?.['mismatch'])) {
+        this.markPartnerFieldsAsTouched(1);
+        return;
+      }
+      if (this.currentStep === 2 &&
+          (this.partnerForm.get('venueName')?.invalid ||
+           this.partnerForm.get('address')?.invalid ||
+           this.partnerForm.get('phone')?.invalid)) {
+        this.markPartnerFieldsAsTouched(2);
+        return;
+      }
+      // Paso 3 no necesita validación previa para avanzar
+      this.currentStep++;
+      this.setPartnerStepValidators(this.currentStep);
+      return;
+    }
     if (this.userType === 'client') {
       if (this.currentStep === 1 && this.clientForm.get('email')?.invalid) {
         this.markClientFieldsAsTouched(1);
@@ -345,8 +496,43 @@ export class RegisterComponent {
     this.currentStep++;
   }
 
+
   prevStep() {
     this.currentStep--;
+  }
+  setPartnerStepValidators(step: number) {
+    // Limpiar validadores de todos los campos
+    const controls = this.partnerForm.controls;
+    Object.keys(controls).forEach(key => {
+      controls[key].clearValidators();
+      controls[key].updateValueAndValidity({ emitEvent: false });
+    });
+  
+    // Paso 1: Credenciales
+    if (step === 1) {
+      controls['email'].setValidators([Validators.required, Validators.email]);
+      controls['password'].setValidators([Validators.required, Validators.minLength(8)]);
+      controls['confirmPassword'].setValidators([Validators.required]);
+    }
+    // Paso 2: Datos del local
+    else if (step === 2) {
+      controls['venueName'].setValidators([Validators.required, Validators.maxLength(100)]);
+      controls['address'].setValidators([Validators.required, Validators.maxLength(200)]);
+      controls['phone'].setValidators([Validators.required, Validators.pattern(/^[0-9]{10,15}$/)]);
+    }
+    // Paso 3: Preferencias y términos
+    else if (step === 3) {
+      controls['description'].setValidators([Validators.required, Validators.maxLength(500)]);
+      controls['capacity'].setValidators([Validators.required, Validators.min(10)]);
+      controls['openingHours'].setValidators([Validators.required, this.validateOpeningHours]);
+      controls['terms'].setValidators([Validators.requiredTrue]);
+    }
+    // Actualizar validadores
+    Object.keys(controls).forEach(key => controls[key].updateValueAndValidity({ emitEvent: false }));
+  
+    // Mantener el validador de grupo (coincidencia de contraseñas)
+    this.partnerForm.setValidators(this.passwordMatchValidator);
+    this.partnerForm.updateValueAndValidity({ emitEvent: false });
   }
 
   // Marcar campos como tocados para mostrar errores
@@ -357,7 +543,7 @@ export class RegisterComponent {
       this.clientForm.get('confirmPassword')?.markAsTouched();
     } else if (step === 2) {
       this.clientForm.get('firstName')?.markAsTouched();
-      this.clientForm.get('birthDate')?.markAsTouched();
+      this.clientForm.get('birthDay')?.markAsTouched();
       this.clientForm.get('gender')?.markAsTouched();
     }
   }
@@ -408,8 +594,8 @@ export class RegisterComponent {
       }
     }
   validateAge(control: AbstractControl): ValidationErrors | null {
-    const birthDate = new Date(control.value);
-    const ageDiff = Date.now() - birthDate.getTime();
+    const birthday = new Date(control.value);
+    const ageDiff = Date.now() - birthday.getTime();
     const ageDate = new Date(ageDiff);
     const age = Math.abs(ageDate.getUTCFullYear() - 1970);
 

@@ -17,7 +17,7 @@ export class AuthPocketbaseService {
   constructor(
 /*     public realtimeOrders: RealtimeOrdersService,
  */    public global: GlobalService) {
-    this.pb = new PocketBase('https://db.vendricom.com:8095');
+    this.pb = new PocketBase('https://db.buckapi.lat:8015');
     
     // Check for existing auth token and restore session
     const token = localStorage.getItem('accessToken');
@@ -75,7 +75,7 @@ export class AuthPocketbaseService {
       name: name,
     };
 
-    // Crear usuario y luego crear el registro en notarios
+    // Crear usuario y luego crear el registro en usuariosPartner o usuariosClient
     return from(
       this.pb
         .collection('users')
@@ -83,11 +83,22 @@ export class AuthPocketbaseService {
         .then((user) => {
           const data = {
             name: name,
-            address: address, // Usamos el parámetro address aquí
-            phone: '', // Agrega los campos correspondientes aquí
-            userId: user.id, // Utiliza el ID del usuario recién creado
-            status: 'pending', // Opcional, establece el estado del cliente
-            images: {}, // Agrega los campos correspondientes aquí
+            venueName: '',
+            address: address, 
+            capacity: '',
+            description: '',
+            openingHours: '',
+            phone: '', 
+            userId: user.id, 
+            status: 'pending', 
+            birthday: '',
+            gender: '',
+            orientation: '',
+            interestedIn: '',
+            lookingFor: '',
+            profileComplete: false,
+            email: email,
+            /* images: {}, */ // Agrega los campos correspondientes aquí
           };
           if (type === 'partner') {
             return this.pb.collection('usuariosPartner').create(data);
@@ -99,7 +110,7 @@ export class AuthPocketbaseService {
         })
     );
   }
-
+  
   profileStatus() {
     return this.complete;
   }
@@ -185,7 +196,7 @@ export class AuthPocketbaseService {
   }
   permision(): void {
     if (!this.isAuthenticated()) {
-      this.global.setRoute('profile');
+      this.global.setRoute('home');
       return;
     }
 
@@ -199,7 +210,7 @@ export class AuthPocketbaseService {
     this.pb.collection('users').getOne(currentUser.id).then(updatedUser => {
       switch (updatedUser["type"]) {
         case 'partner':
-          this.global.setRoute('home-partner');
+          this.global.setRoute('profile-local');
           this.complete = true;
           break;
         case 'client':

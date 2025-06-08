@@ -292,9 +292,9 @@
             
             <div class="mb-3">
               <label class="form-label">Fecha de Nacimiento *</label>
-              <input type="date" class="form-control" formControlName="birthDate"
-                    [class.is-invalid]="f['birthDate'].touched && f['birthDate'].invalid">
-              <div *ngIf="f['birthDate'].touched && f['birthDate'].invalid" class="invalid-feedback">
+              <input type="date" class="form-control" formControlName="birthday"
+                    [class.is-invalid]="f['birthday'].touched && f['birthday'].invalid">
+              <div *ngIf="f['birthday'].touched && f['birthday'].invalid" class="invalid-feedback">
                 Por favor ingresa tu fecha de nacimiento
               </div>
             </div>
@@ -397,14 +397,14 @@
         <a (click)="prevStep()" class="back-btn dz-flex-box">
           <i class="icon feather icon-chevron-left"></i>
         </a>
-        <div class="section-head ps-0">
+       <!--  <div class="section-head ps-0">
           <h3>Agrega tus fotos</h3>
           <p>Sube al menos 2 fotos para tu perfil</p>
-        </div>
+        </div> -->
         
         <!-- Envuelve todo en el formulario -->
-        <form [formGroup]="clientForm">
-          <div class="row g-3">
+         <form [formGroup]="clientForm">
+          <!--<div class="row g-3">
             <div class="col-12">
               <div class="dz-drop-box">
                 <div class="drop-bx bx-lg">
@@ -425,7 +425,7 @@
               </div>
             </div>
             
-            <!-- <div class="col-4" *ngFor="let index of [1, 2]; let i = index">
+             <div class="col-4" *ngFor="let index of [1, 2]; let i = index">
               <div class="dz-drop-box">
                 <div class="drop-bx">
                   <div class="imagePreview" [style.background-image]="'url(' + (photosArray.value[index] || '../assets/images/recent-pic/drop-bx.png') + ')'">
@@ -438,9 +438,9 @@
                   </div>
                 </div>
               </div>
-            </div> -->
+            </div>
             
-            <!-- <div class="col-4" *ngFor="let index of [3, 4, 5]; let i = index">
+             <div class="col-4" *ngFor="let index of [3, 4, 5]; let i = index">
               <div class="dz-drop-box">
                 <div class="drop-bx">
                   <div class="imagePreview" [style.background-image]="'url(' + (photosArray.value[index] || '../assets/images/recent-pic/drop-bx.png') + ')'">
@@ -453,22 +453,28 @@
                   </div>
                 </div>
               </div>
-            </div> -->
-          </div>
+            </div>
+          </div>-->
           
           <div class="form-check mt-4" style="margin-top:10.5rem !important;">
-            <input class="form-check-input" type="checkbox" id="terms" formControlName="terms">
-            <label class="form-check-label" for="terms">
-              Acepto los 
-              <a href="#" (click)="$event.preventDefault(); openTermsModal('terms')" style="cursor: pointer; color: #430d7f;">Términos </a> y
-              <a href="#" (click)="$event.preventDefault(); openTermsModal('privacy')" style="cursor: pointer; color: #430d7f;">Política de privacidad</a>
-            </label>
-            <div *ngIf="f['terms'].touched && f['terms'].invalid" class="invalid-feedback">
-              Debes aceptar los términos y políticas de privacidad
-              </div>
-          </div>
+  <input
+    class="form-check-input"
+    type="checkbox"
+    id="terms"
+    formControlName="terms"
+  >
+  <label class="form-check-label" for="terms">
+    Acepto los 
+    <a  (click)="$event.preventDefault(); openTermsModal('terms')" style="cursor: pointer; color: #430d7f;">Términos</a> y
+    <a  (click)="$event.preventDefault(); openTermsModal('privacy')" style="cursor: pointer; color: #430d7f;">Política de privacidad</a>
+  </label>
+  <div *ngIf="f['terms'].touched && f['terms'].invalid" class="invalid-feedback">
+    Debes aceptar los términos y políticas de privacidad
+  </div>
+</div>
+
           
-        </form> <!-- Cierre del formulario -->
+        </form>  <!-- Cierre del formulario -->
       </div>
     </div>
   </div> 
@@ -496,19 +502,26 @@
   <div class="footer fixed bg-white" *ngIf="userType && currentStep === (userType === 'partner' ? 3 : 4)">
     <div class="container">
       <ng-container *ngIf="userType === 'partner'">
-        <button (click)="onSubmit()" class="btn btn-success w-100" 
-                [disabled]="!partnerForm.get('terms')?.value || partnerForm.invalid">
-          {{ !partnerForm.get('terms')?.value ? 'Acepta los términos' : 
-             partnerForm.invalid ? 'Completa todos los campos requeridos' : 
-             'Completar Registro' }}
-        </button>
+        <button
+  type="button"
+  (click)="onSubmit()"
+  class="btn btn-success w-100"
+  [disabled]="isSubmitting || !partnerForm.get('terms')?.value || partnerForm.invalid">
+  {{ !partnerForm.get('terms')?.value ? 'Acepta los términos' : 
+     partnerForm.invalid ? 'Completa todos los campos requeridos' : 
+     'Completar Registro' }}
+</button>
+    
       </ng-container>
       
       <ng-container *ngIf="userType === 'client'">
-        <button (click)="onSubmit()" class="btn btn-success w-100" 
-                [disabled]="!clientForm.get('terms')?.value || clientForm.invalid">
-          Completar Registro
-        </button>
+        <button
+  type="button"
+  (click)="onSubmit()"
+  class="btn btn-success w-100"
+  [disabled]="isSubmitting || !clientForm.get('terms')?.value || clientForm.invalid">
+  Completar Registro
+</button>
       </ng-container>
     </div>
   </div>

@@ -32,7 +32,7 @@ import { DetailprofileComponent } from './components/detailprofile/detailprofile
     FavoritesComponent,
     ChatComponent,
     ChatDetailComponent,
-    DetailprofileComponent
+    DetailprofileComponent,
   ],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']

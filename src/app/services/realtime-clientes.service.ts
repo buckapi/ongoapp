@@ -30,7 +30,7 @@ export class RealtimeClientesService implements OnDestroy {
     this.clientesSubject.asObservable();
 
   constructor() {
-    this.pb = new PocketBase('https://db.vendricom.com:8095');
+    this.pb = new PocketBase('https://db.buckapi.lat:8015');
     this.subscribeToClientes();
   }
 

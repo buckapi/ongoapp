@@ -1,31 +1,96 @@
-/* Establecer altura fija para el contenedor principal */
-.page-content {
-    height: calc(100vh - 60px); /* Ajusta el valor según el tamaño de tu header */
-    overflow-y: auto; /* Habilita el scroll vertical */
-    -webkit-overflow-scrolling: touch; /* Mejora el desplazamiento en dispositivos táctiles */
-  }
-  
-  /* Asegurar que el contenedor interno no cause problemas de desplazamiento */
-  .container {
-    height: 100%;
-    padding: 15px;
-  }
-  
-  /* Opcional: Estilo para mejorar la apariencia del scrollbar */
-  ::-webkit-scrollbar {
-    width: 6px;
-  }
-  
-  ::-webkit-scrollbar-track {
-    background: #f1f1f1;
-    border-radius: 10px;
-  }
-  
-  ::-webkit-scrollbar-thumb {
-    background: #888;
-    border-radius: 10px;
-  }
-  
-  ::-webkit-scrollbar-thumb:hover {
-    background: #555;
-  }
+
+app-root {
+  height: 100%;
+  width: 100%;
+  display: block;
+  position: relative;
+}
+
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+:host {
+  display: block;
+  width: 100vw;
+  height: 100vh;
+}
+
+.map-container {
+  position: fixed;
+  top: 20px;         /* Altura de tu header (ajusta si es diferente) */
+  bottom: 10px;      /* Altura del footer de navegación */
+  left: 0;
+  right: 0;
+  z-index: 1;
+}
+
+
+#map {
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  position: relative;
+}
+
+
+
+#map.hidden {
+  display: none;
+}
+
+.loading-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.8);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.error-message {
+  padding: 20px;
+  color: #721c24;
+  background-color: #f8d7da;
+  border-radius: 4px;
+  margin: auto;
+}
+
+.sidebar {
+  width: 300px;
+  padding: 20px;
+  background: white;
+  box-shadow: -2px 0 5px rgba(0,0,0,0.1);
+  overflow-y: auto;
+}
+
+.popup-content {
+  max-width: 250px;
+}
+
+.popup-content h3 {
+  margin-top: 0;
+  font-size: 16px;
+}
+
+.popup-content ul {
+  padding-left: 20px;
+  margin: 5px 0;
+}
+
+.custom-marker img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid white;
+  box-shadow: 0 0 4px rgba(0,0,0,0.5);
+}
