@@ -1,3 +1,4 @@
+
 import { Injectable, OnDestroy } from '@angular/core';
 import PocketBase from 'pocketbase';
 import { BehaviorSubject, Observable } from 'rxjs';
@@ -8,7 +9,7 @@ export interface Service {
   status?: string;
 }
 
-export interface Cliente {
+export interface Partner {
   id: string;
   name: string;
   gender: string;
@@ -21,12 +22,12 @@ export interface Cliente {
 @Injectable({
   providedIn: 'root',
 })
-export class RealtimeClientesService implements OnDestroy {
+export class RealtimePartnerService implements OnDestroy {
   private pb: PocketBase;
-  private clientesSubject = new BehaviorSubject<Cliente[]>([]);
+  private clientesSubject = new BehaviorSubject<Partner[]>([]);
 
   // Observable for components to subscribe to
-  public clientes$: Observable<Cliente[]> =
+  public clientes$: Observable<Partner[]> =
     this.clientesSubject.asObservable();
 
   constructor() {
@@ -42,12 +43,12 @@ export class RealtimeClientesService implements OnDestroy {
         .authWithPassword('admin@email.com', 'admin1234');
 
       // Subscribe to changes in any record of the 'professionals' collection
-      this.pb.collection('usuariosClient').subscribe('*', (e : any) => {
+      this.pb.collection('usuariosPartner').subscribe('*', (e : any) => {
         this.handleRealtimeEvent(e);
       });
 
       // Initialize the list of professionals
-      this.updateClientesList();
+      this.updatePartnerList();
     } catch (error) {
       console.error('Error during subscription:', error);
     }
@@ -58,24 +59,24 @@ export class RealtimeClientesService implements OnDestroy {
     console.log(`Event Record:`, event.record);
 
     // Update the list of professionals
-    this.updateClientesList();
+    this.updatePartnerList();
   }
 
-  private async updateClientesList() {
+  private async updatePartnerList() {
     try {
       // Get the updated list of professionals
-      const records = await this.pb.collection('usuariosClient').getFullList<Cliente>(200, {
+      const records = await this.pb.collection('usuariosPartner').getFullList<Partner>(200, {
         sort: '-created', // Sort by creation date
       });
 
-      // Ensures each record conforms to Cliente structure
-      const clientes = records.map((record: any) => ({
+      // Ensures each record conforms to Partner structure
+      const partners = records.map((record: any) => ({
         ...record,
         images: Array.isArray(record.images) ? record.images : [],
         services: Array.isArray(record.services) ? record.services : [],
-      })) as Cliente[];
+      })) as Partner[];
 
-      this.clientesSubject.next(clientes);
+      this.clientesSubject.next(partners);
     } catch (error) {
       console.error('Error updating clientes list:', error);
     }
@@ -83,6 +84,6 @@ export class RealtimeClientesService implements OnDestroy {
 
   ngOnDestroy() {
     // Unsubscribe when the service is destroyed
-    this.pb.collection('usuariosClient').unsubscribe('*');
+    this.pb.collection('usuariosPartner').unsubscribe('*');
   }
 }
