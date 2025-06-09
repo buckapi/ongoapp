@@ -11,11 +11,15 @@ import { CommonModule } from '@angular/common';
 })
 export class ExplorerComponent {
   partners: any[] = [];
+promos: any[] = [];
 constructor(public global: GlobalService){
 }
 ngOnInit(): void {
   this.global.partners$.subscribe((partners : any[]) => {
     this.partners = partners;
+  });
+  this.global.promos$.subscribe((promos : any[]) => {
+    this.promos = promos;
   });
 }
 }

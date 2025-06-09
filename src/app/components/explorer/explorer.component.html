@@ -9,51 +9,19 @@
                     <div class="title-bar">
                         <h6 class="title">Promociones y eventos</h6>
                     </div>
-                    <div class="swiper-btn-center-lr">
-                        <div class="swiper spot-swiper1 mb-3">
+                    <div class="swiper-btn-center-lr" >
+                        <div class="swiper spot-swiper1 mb-3" >
                             <div class="swiper-wrapper">
-                                <div class="swiper-slide">
+                                <div class="swiper-slide" *ngFor="let promo of promos">
                                     <div class="dz-media-card style-4">
-                                        <a href="profile-detail.html">
+                                        <a>
                                             <div class="dz-media">
-                                                <img src="../assets/images/w3tinder/liked/pic1.png" alt="">
+                                                <img src="{{promo.files[0]}}" alt="">
                                             </div>
                                             <div class="dz-content">
                                                 <div class="left-content">
-                                                    <h6 class="title">Richard, 22</h6>	
-                                                    <span class="active-status">Recently Active</span>
-                                                </div>
-                                                <div class="dz-icon ms-auto me-0"><i class="flaticon flaticon-star-1"></i></div>
-                                            </div>
-                                        </a>
-                                    </div>
-                                </div>
-                                <div class="swiper-slide">
-                                    <div class="dz-media-card style-4">
-                                        <a href="profile-detail.html">
-                                            <div class="dz-media">
-                                                <img src="../assets/images/w3tinder/liked/pic2.png" alt="">
-                                            </div>
-                                            <div class="dz-content">
-                                                <div class="left-content">
-                                                    <h6 class="title">Abby, 27</h6>	
-                                                    <span class="active-status">Recently Active</span>
-                                                </div>
-                                                <div class="dz-icon ms-auto me-0"><i class="flaticon flaticon-star-1"></i></div>
-                                            </div>
-                                        </a>
-                                    </div>
-                                </div>
-                                <div class="swiper-slide">
-                                    <div class="dz-media-card style-4">
-                                        <a href="profile-detail.html">
-                                            <div class="dz-media">
-                                                <img src="../assets/images/w3tinder/liked/pic3.png" alt="">
-                                            </div>
-                                            <div class="dz-content">
-                                                <div class="left-content">
-                                                    <h6 class="title">Javelle, 23</h6>	
-                                                    <span class="active-status">Recently Active</span>
+                                                    <h6 class="title">{{promo.name}}</h6>	
+                                                    <span class="active-status">{{promo.description}}</span>
                                                 </div>
                                                 <div class="dz-icon ms-auto me-0"><i class="flaticon flaticon-star-1"></i></div>
                                             </div>

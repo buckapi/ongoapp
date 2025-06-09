@@ -11,12 +11,15 @@ private clientesSubject = new BehaviorSubject<any[]>([]);
 clientes$ = this.clientesSubject.asObservable();
 private partnersSubject = new BehaviorSubject<any[]>([]);
 partners$ = this.partnersSubject.asObservable();
+private promosSubject = new BehaviorSubject<any[]>([]);
+promos$ = this.promosSubject.asObservable();
 public selectedPartner: any = null;
   constructor(
    
   ) { 
     this.initClientesRealtime();
     this.initPartnersRealtime();
+    this.initPromosRealtime();
   }
   setRoute(route: string) {
     this.activeRoute = route;
@@ -60,5 +63,23 @@ public selectedPartner: any = null;
   previewPartner(partner: any) {
     this.selectedPartner = partner;
     this.activeRoute = 'detail-profile-local';
+  }
+  async initPromosRealtime() {
+    // Fetch inicial
+    const result = await this.pb.collection('promos').getFullList();
+    this.promosSubject.next(result);
+
+    // Suscripción realtime
+    this.pb.collection('promos').subscribe('*', (e: any) => {
+      let current = this.promosSubject.getValue();
+      if (e.action === 'create') {
+        current = [...current, e.record];
+      } else if (e.action === 'update') {
+        current = current.map((c: any) => c.id === e.record.id ? e.record : c);
+      } else if (e.action === 'delete') {
+        current = current.filter((c: any) => c.id !== e.record.id);
+      }
+      this.promosSubject.next(current);
+    });
   }
 }
