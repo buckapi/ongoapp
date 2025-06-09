@@ -16,6 +16,7 @@ import { ChatComponent } from './components/chat/chat.component';
 import { ChatDetailComponent } from './components/chat-detail/chat-detail.component';
 import { DetailprofileComponent } from './components/detailprofile/detailprofile.component';
 import { ExplorerComponent } from './components/explorer/explorer.component';
+import { DetailprofilelocalComponent } from './components/detailprofilelocal/detailprofilelocal.component';
 
 @Component({
   selector: 'app-root',
@@ -34,7 +35,8 @@ import { ExplorerComponent } from './components/explorer/explorer.component';
     ChatComponent,
     ChatDetailComponent,
     DetailprofileComponent,
-    ExplorerComponent
+    ExplorerComponent,
+    DetailprofilelocalComponent
   ],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']

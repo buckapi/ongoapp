@@ -11,7 +11,7 @@ private clientesSubject = new BehaviorSubject<any[]>([]);
 clientes$ = this.clientesSubject.asObservable();
 private partnersSubject = new BehaviorSubject<any[]>([]);
 partners$ = this.partnersSubject.asObservable();
-
+public selectedPartner: any = null;
   constructor(
    
   ) { 
@@ -56,5 +56,9 @@ partners$ = this.partnersSubject.asObservable();
       }
       this.partnersSubject.next(current);
     });
+  }
+  previewPartner(partner: any) {
+    this.selectedPartner = partner;
+    this.activeRoute = 'detail-profile-local';
   }
 }

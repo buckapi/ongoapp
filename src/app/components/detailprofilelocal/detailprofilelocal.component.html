@@ -1,0 +1,78 @@
+<!-- Page Content Start -->
+<div class="page-content space-top p-b40">
+    <div class="container">
+        <div class="detail-area" *ngIf="global.selectedPartner">
+            <div class="dz-media-card style-2">
+                <div class="dz-media profile-picture">
+                    <img src="{{global.selectedPartner.files[0]}}" alt="Foto de perfil">
+                </div>
+                  
+                <div class="dz-content">
+                    <div class="left-content">
+                        <h4 class="title">{{global.selectedPartner.venueName}}</h4>
+                        <p class="mb-0"><i class="icon feather icon-map-pin"></i> {{global.selectedPartner.address}}</p>
+                    </div>
+                    <a  class="dz-icon"><i class="flaticon flaticon-star-1"></i></a>
+                </div>
+            </div>
+            <div class="detail-bottom-area">
+                <div class="about">
+                    <h6 class="title">Nuestro lugar</h6>
+                    <p class="para-text">{{global.selectedPartner.description}}</p>					
+                </div>
+                <div class="intrests mb-3">
+                    <h6 class="title">Servicios</h6>
+                    <ul class="dz-tag-list">
+                        <li *ngFor="let service of global.selectedPartner.services">
+                          <div class="dz-tag">
+                            <i class="icon feather icon-check-circle"></i>
+                            <span>{{service}}</span>
+                          </div>
+                        </li>
+                      </ul>
+                </div>
+                <div class="languages mb-3">
+                    <h6 class="title">Horario</h6>
+                    <ul class="dz-tag-list">
+                        <li> 
+                            <div class="dz-tag">
+                                <span>{{global.selectedPartner.openingHours}}</span>
+                            </div>
+                        </li>
+                        
+                    </ul>
+                </div>
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="card-title">Galeria</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="dz-lightgallery row g-2" id="lightgallery-3">
+                                <a class="col-4" href="../assets/images/slider/pic1.png">
+                                    <img src="../assets/images/slider/pic1.png" alt="image">
+                                </a>
+                                <a class="col-4" href="../assets/images/slider/pic2.png">
+                                    <img src="../assets/images/slider/pic2.png" alt="image">
+                                </a>
+                                <a class="col-4" href="../assets/images/slider/pic3.png">
+                                    <img src="../assets/images/slider/pic3.png" alt="image">
+                                </a>
+                                <a class="col-4" href="../assets/images/slider/pic4.png">
+                                    <img src="../assets/images/slider/pic4.png" alt="image">
+                                </a>
+                                <a class="col-4" href="../assets/images/slider/pic1.png">
+                                    <img src="../assets/images/slider/pic1.png" alt="image">
+                                </a>
+                                <a class="col-4" href="../assets/images/slider/pic2.png">
+                                    <img src="../assets/images/slider/pic2.png" alt="image">
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+</div>

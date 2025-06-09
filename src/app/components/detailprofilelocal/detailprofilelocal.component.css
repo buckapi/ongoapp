@@ -1,0 +1,19 @@
+.dz-media-card.style-2 .dz-media {
+    height: auto;
+}
+.dz-media.profile-picture {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 10px;
+  }
+  
+  .dz-media.profile-picture img {
+    width: 150px;
+    height: 150px;
+    border-radius: 20%; /* hace que sea circular */
+    object-fit: cover;
+    border: 4px solid white;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  }
+  
